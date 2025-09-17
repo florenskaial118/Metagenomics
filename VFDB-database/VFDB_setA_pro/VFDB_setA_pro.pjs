@@ -1,0 +1,22 @@
+{
+  "version": "1.2",
+  "dbname": "VFDB_setA_pro",
+  "dbtype": "Protein",
+  "db-version": 5,
+  "description": "VFDB-database/VFDB_setA_pro.fas",
+  "number-of-letters": 1811141,
+  "number-of-sequences": 4363,
+  "last-updated": "2025-09-17T14:30:00",
+  "number-of-volumes": 1,
+  "bytes-total": 2970957,
+  "bytes-to-cache": 1850529,
+  "files": [
+    "VFDB_setA_pro.pdb",
+    "VFDB_setA_pro.phr",
+    "VFDB_setA_pro.pin",
+    "VFDB_setA_pro.pot",
+    "VFDB_setA_pro.psq",
+    "VFDB_setA_pro.ptf",
+    "VFDB_setA_pro.pto"
+  ]
+}

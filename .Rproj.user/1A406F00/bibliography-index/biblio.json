@@ -27,6 +27,73 @@
             "title": "Literate programming",
             "type": "article-journal",
             "volume": "27"
+        },
+        {
+            "DOI": "10.3390/biomedicines10092162",
+            "URL": "http://dx.doi.org/10.3390/biomedicines10092162",
+            "author": [
+                {
+                    "family": "Kovtun",
+                    "given": "Alexey S."
+                },
+                {
+                    "family": "Averina",
+                    "given": "Olga V."
+                },
+                {
+                    "family": "Angelova",
+                    "given": "Irina Y."
+                },
+                {
+                    "family": "Yunes",
+                    "given": "Roman A."
+                },
+                {
+                    "family": "Zorkina",
+                    "given": "Yana A."
+                },
+                {
+                    "family": "Morozova",
+                    "given": "Anna Y."
+                },
+                {
+                    "family": "Pavlichenko",
+                    "given": "Alexey V."
+                },
+                {
+                    "family": "Syunyakov",
+                    "given": "Timur S."
+                },
+                {
+                    "family": "Karpenko",
+                    "given": "Olga A."
+                },
+                {
+                    "family": "Kostyuk",
+                    "given": "George P."
+                },
+                {
+                    "family": "Danilenko",
+                    "given": "Valery N."
+                }
+            ],
+            "container-title": "Biomedicines",
+            "id": "kovtun2022",
+            "issue": "9",
+            "issued": {
+                "date-parts": [
+                    [
+                        2022,
+                        9,
+                        2
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "2162",
+            "title": "Alterations of the Composition and Neurometabolic Profile of Human Gut Microbiota in Major Depressive Disorder",
+            "type": "article-journal",
+            "volume": "10"
         }
     ],
     "project_biblios": [

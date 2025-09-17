@@ -1,10 +1,13 @@
 project:
   type: book
+  output-dir: docs
 
 book:
-  title: "Metagenomics"
-  author: "Norah Jones"
-  date: "9/17/2025"
+  title: "Сравнение генов патогенности (вирулентности) в метагеномах изолятов кишечной микробиоты у здоровых людей и больных клинической депрессией (бакалаврская работа)"
+  author: 
+  - "Студент: Флоренская Лидия Кирилловна"
+  - "Научный руководитель: Беккер Ольга Борисовна, канд. биол. наук"
+  date: 2025-06-20
   chapters:
     - index.qmd
     - intro.qmd
@@ -18,6 +21,6 @@ format:
     theme: cosmo
   pdf:
     documentclass: scrreprt
-
+engine: knitr
 editor: visual
 

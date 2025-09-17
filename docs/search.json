@@ -1,0 +1,122 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Сравнение генов патогенности (вирулентности) в метагеномах изолятов кишечной микробиоты у здоровых людей и больных клинической депрессией (бакалаврская работа)",
+    "section": "",
+    "text": "1 Дизайн исследования",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Дизайн исследования</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#поиск-генов-патогенности",
+    "href": "index.html#поиск-генов-патогенности",
+    "title": "Сравнение генов патогенности (вирулентности) в метагеномах изолятов кишечной микробиоты у здоровых людей и больных клинической депрессией (бакалаврская работа)",
+    "section": "1.1 Поиск генов патогенности",
+    "text": "1.1 Поиск генов патогенности\n\nСкачать BLAST с официального сайта\nСоздать BLAST базу данных из скаченного фаста-файла c аминокислотными последовательностями\n\n\nhead -5 VFDB-database/VFDB_setA_pro.fas\n\n&gt;VFG037176(gb|WP_001081735) (plc1) phospholipase C [Phospholipase C (VF0470) - Exotoxin (VFC0235)] [Acinetobacter baumannii ACICU]\nMNRREFLLNSTKTMFGTAALASFPLSIQKALAIDAKVESGTIQDVKHIVILTQENRSFDN\nYFGTLKGVRGFGDRFTIPMTEGRKVWEQYDANKKKVLPYHLDSHLGNAQRVTGTNHSWSD\nGQGAWDNGRMSDWVTHKQPQSMGYYKKQEVEYQFALANAFTICDAYHCAMHAGTNPNRKF\nIWTGTNGPTGAGVASVVNEFDGIGPSTEGYEWTTYPERLQQAGVTWKVYQNMPDNFTDNP\n\n\n\nSoftware/ncbi-blast-2.16.0+/bin/makeblastdb \\\n    -in VFDB-database/VFDB_setA_pro.fas \\\n    -dbtype 'prot' \\\n    -out VFDB-database/VFDB_setA_pro/VFDB_setA_pro\n\n\n\nBuilding a new DB, current time: 09/17/2025 14:20:55\nNew DB name:   /Users/lidaflorenskaya/Documents/АлгБио/Metagenomics/VFDB-database/VFDB_setA_pro/VFDB_setA_pro\nNew DB title:  VFDB-database/VFDB_setA_pro.fas\nSequence type: Protein\nDeleted existing Protein BLAST database named /Users/lidaflorenskaya/Documents/АлгБио/Metagenomics/VFDB-database/VFDB_setA_pro/VFDB_setA_pro\nKeep MBits: T\nMaximum file size: 3000000000B\nAdding sequences from FASTA; added 4363 sequences in 0.939896 seconds.\n\n\n\nНайти открытые рамки считывания в собранных контигах MetaGeneMark ?\nВыравнивание готовых ОРС на базу данных VFDB (версия VFDB_setA_pro) с использованием BLASTp (версия ncbi-blast-2.16.0+).\n\n\nfor file in Obtained-data/ORFs/AA/*_orf_aa_names.fasta; do\n\n    filename=\"${file##*/}\"  # Get the filename without the path\n\n    # Use a regex to extract the components\n    [[ \"$filename\" =~ ([A-Za-z]+)_([0-9]+)_orf_aa_names\\.fasta ]]\n    prefix=\"${BASH_REMATCH[1]}\"\n    number=\"${BASH_REMATCH[2]}\"\n\n    # Construct the output filename.\n    output_file=\"Blast-results/Blast-results-raw/raw_blast_file_${prefix}_${number}.csv\"\n\n    echo \"Processing: $file\"\n\n    Software/ncbi-blast-2.16.0+/bin/blastp \\\n        -query \"$file\" \\\n        -db VFDB-database/VFDB_setA_pro/VFDB_setA_pro \\\n        -out \"$output_file\" \\\n        -outfmt 6 \\\n        -num_threads 4 \n\ndone\n\necho \"Script finished.\"\n\nВыполяем эту долгую ячейку с помощью отдельной сессии: screen -S BLAST; sh Scripts/BLAST.sh; screen -r BLAST\n\nhead -5 Blast-results/Blast-results-raw/raw_blast_file_HC_34.csv\n\nNODE_1_length_320496_cov_13.932348$gene_id=1    VFG001937(gb|YP_002344529)  31.944  72  41  3   8   77  218 283 0.29    28.9\nNODE_1_length_320496_cov_13.932348$gene_id=1    VFG012760(gb|NP_858157) 29.545  44  29  1   71  114 13  54  0.42    27.7\nNODE_1_length_320496_cov_13.932348$gene_id=1    VFG045567(gb|WP_010948074)  30.769  52  23  2   96  136 256 305 1.7 26.6\nNODE_1_length_320496_cov_13.932348$gene_id=1    VFG045524(gb|WP_010947182)  32.609  46  22  2   131 176 87  123 7.5 24.3\nNODE_1_length_320496_cov_13.932348$gene_id=2    VFG033484(gb|WP_000953248)  27.660  47  34  0   69  115 203 249 3.8 26.6\n\n\nКритерии: прогент гомологии “pident” &gt;= 90%, разница в длине выровненных последовательностей &lt;= 5%.\nТаксономическая аннтотация контигов\n\nCONTIGS_DIR=\"/mnt/storage/kovtunas/Depression_data/assemblies\"\nKRAKEN_OUTPUT_DIR=\"/home/lidaf/1_part/Kraken/Kraken_outputs\"\nKRAKEN_REPORT_DIR=\"/home/lidaf/1_part/Kraken/Kraken_reports\"\nKRAKEN_MPA_REPORT_DIR=\"/home/lidaf/1_part/Kraken/Kraken_mpa_reports\"\n\nfor file_path in \"$CONTIGS_DIR\"/*\\.fasta; do\n    filename=$(basename \"$file_path\")\n    type=$(echo \"$filename\" | cut -d'.' -f1 | tr '[:lower:]' '[:upper:]')\n    kraken_output_file=\"$KRAKEN_OUTPUT_DIR/${type}.Kraken_output.txt\"\n    kraken_report_file=\"$KRAKEN_REPORT_DIR/${type}.Kraken_report.txt\"\n    /home/galanova/kraken2/KRAKEN2/kraken2 \\\n        --db /home/kovtunas/kraken2_pluspf \\\n        --threads 20 \\\n        --confidence 0.01 \\\n        --output \"$kraken_output_file\" \\\n        --report \"$kraken_report_file\"  \\\n        \"$file_path\"\n    python '/home/lidaf/KrakenTools/kreport2mpa.py' -r \"$file_path\" -o \"$kraken_mpa_report_file\" \n    printf \"%s\\n\" \"$type\"\ndone\necho \"Script finished.\"",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Функциональный анализ метагеномов</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html",
+    "href": "intro.html",
+    "title": "2  Функциональный анализ метагеномов",
+    "section": "",
+    "text": "2.1 Поиск генов патогенности\nhead -5 VFDB-database/VFDB_setA_pro.fas\n\n&gt;VFG037176(gb|WP_001081735) (plc1) phospholipase C [Phospholipase C (VF0470) - Exotoxin (VFC0235)] [Acinetobacter baumannii ACICU]\nMNRREFLLNSTKTMFGTAALASFPLSIQKALAIDAKVESGTIQDVKHIVILTQENRSFDN\nYFGTLKGVRGFGDRFTIPMTEGRKVWEQYDANKKKVLPYHLDSHLGNAQRVTGTNHSWSD\nGQGAWDNGRMSDWVTHKQPQSMGYYKKQEVEYQFALANAFTICDAYHCAMHAGTNPNRKF\nIWTGTNGPTGAGVASVVNEFDGIGPSTEGYEWTTYPERLQQAGVTWKVYQNMPDNFTDNP\nSoftware/ncbi-blast-2.16.0+/bin/makeblastdb \\\n    -in VFDB-database/VFDB_setA_pro.fas \\\n    -dbtype 'prot' \\\n    -out VFDB-database/VFDB_setA_pro/VFDB_setA_pro\n\n\n\nBuilding a new DB, current time: 09/17/2025 14:30:55\nNew DB name:   /Users/lidaflorenskaya/Documents/АлгБио/Metagenomics/VFDB-database/VFDB_setA_pro/VFDB_setA_pro\nNew DB title:  VFDB-database/VFDB_setA_pro.fas\nSequence type: Protein\nDeleted existing Protein BLAST database named /Users/lidaflorenskaya/Documents/АлгБио/Metagenomics/VFDB-database/VFDB_setA_pro/VFDB_setA_pro\nKeep MBits: T\nMaximum file size: 3000000000B\nAdding sequences from FASTA; added 4363 sequences in 0.632675 seconds.\nfor file in Obtained-data/ORFs/AA/*_orf_aa_names.fasta; do\n\n    filename=\"${file##*/}\"  # Get the filename without the path\n\n    # Use a regex to extract the components\n    [[ \"$filename\" =~ ([A-Za-z]+)_([0-9]+)_orf_aa_names\\.fasta ]]\n    prefix=\"${BASH_REMATCH[1]}\"\n    number=\"${BASH_REMATCH[2]}\"\n\n    # Construct the output filename.\n    output_file=\"Blast-results/Blast-results-raw/raw_blast_file_${prefix}_${number}.csv\"\n\n    echo \"Processing: $file\"\n\n    Software/ncbi-blast-2.16.0+/bin/blastp \\\n        -query \"$file\" \\\n        -db VFDB-database/VFDB_setA_pro/VFDB_setA_pro \\\n        -out \"$output_file\" \\\n        -outfmt 6 \\\n        -num_threads 4 \n\ndone\n\necho \"Script finished.\"\nВыполяем эту долгую ячейку с помощью отдельной сессии: screen -S BLAST; sh Scripts/BLAST.sh; screen -r BLAST\nhead -5 Blast-results/Blast-results-raw/raw_blast_file_HC_34.csv\n\nNODE_1_length_320496_cov_13.932348$gene_id=1    VFG001937(gb|YP_002344529)  31.944  72  41  3   8   77  218 283 0.29    28.9\nNODE_1_length_320496_cov_13.932348$gene_id=1    VFG012760(gb|NP_858157) 29.545  44  29  1   71  114 13  54  0.42    27.7\nNODE_1_length_320496_cov_13.932348$gene_id=1    VFG045567(gb|WP_010948074)  30.769  52  23  2   96  136 256 305 1.7 26.6\nNODE_1_length_320496_cov_13.932348$gene_id=1    VFG045524(gb|WP_010947182)  32.609  46  22  2   131 176 87  123 7.5 24.3\nNODE_1_length_320496_cov_13.932348$gene_id=2    VFG033484(gb|WP_000953248)  27.660  47  34  0   69  115 203 249 3.8 26.6\nКритерии: прогент гомологии “pident” &gt;= 90%, разница в длине выровненных последовательностей &lt;= 5%.\nТаксономическая аннтотация контигов\nCONTIGS_DIR=\"/mnt/storage/kovtunas/Depression_data/assemblies\"\nKRAKEN_OUTPUT_DIR=\"/home/lidaf/1_part/Kraken/Kraken_outputs\"\nKRAKEN_REPORT_DIR=\"/home/lidaf/1_part/Kraken/Kraken_reports\"\nKRAKEN_MPA_REPORT_DIR=\"/home/lidaf/1_part/Kraken/Kraken_mpa_reports\"\n\nfor file_path in \"$CONTIGS_DIR\"/*\\.fasta; do\n    filename=$(basename \"$file_path\")\n    type=$(echo \"$filename\" | cut -d'.' -f1 | tr '[:lower:]' '[:upper:]')\n    kraken_output_file=\"$KRAKEN_OUTPUT_DIR/${type}.Kraken_output.txt\"\n    kraken_report_file=\"$KRAKEN_REPORT_DIR/${type}.Kraken_report.txt\"\n    /home/galanova/kraken2/KRAKEN2/kraken2 \\\n        --db /home/kovtunas/kraken2_pluspf \\\n        --threads 20 \\\n        --confidence 0.01 \\\n        --output \"$kraken_output_file\" \\\n        --report \"$kraken_report_file\"  \\\n        \"$file_path\"\n    python '/home/lidaf/KrakenTools/kreport2mpa.py' -r \"$file_path\" -o \"$kraken_mpa_report_file\" \n    printf \"%s\\n\" \"$type\"\ndone\necho \"Script finished.\"",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Функциональный анализ метагеномов</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#схема-исследования",
+    "href": "intro.html#схема-исследования",
+    "title": "1  Дизайн исследования",
+    "section": "",
+    "text": "Figure 1.1: Схема проведения метагеномного анализа",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Дизайн исследования</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#подготовка-и-фильтрация-метагеномных-ридов",
+    "href": "intro.html#подготовка-и-фильтрация-метагеномных-ридов",
+    "title": "1  Дизайн исследования",
+    "section": "1.2 Подготовка и фильтрация метагеномных ридов",
+    "text": "1.2 Подготовка и фильтрация метагеномных ридов\nПервоначально, в рамках предшествующего исследования, из каждого образца фекалий была выделена общая геномная ДНК с использованием набора QIAamp PowerFecal Pro DNA Kit (Qiagen, Германия) в соответствии с рекомендациями производителя. Далее были созданы метагеномные библиотеки с использованием подхода “shotgun-sequencing”. Данный подход включал случайное фрагментирование ДНК до средней длины 350 пар оснований с использованием Covaris M220 (Covaris LLC., США), секвенирование парных прочтений (paired-end reads) на платформе Illumina HiSeq X Ten (Illumina Inc., США) и последующий контроль качества с использованием FastQC v0.11.5 .\nДля обеспечения высокого качества данных, исключения влияния артефактов секвенирования и контаминации ДНК хозяина, была выполнена строгая фильтрация ридов. В первую очередь, был произведен тримминг ридов с использованием Trimmomatic v0.39 с целью удаления низкокачественных участков и адаптеров. Затем, для удаления ридов, происходящих от ДНК человека, было проведено выравнивание ридов на референсный геном человека (hg19) с использованием Bowtie2 (версия 2.4.17). Риды, не картирующиеся на геном человека, были сохранены для дальнейшего анализа, что позволило сфокусироваться исключительно на микробном сообществе.\nНа заключительном этапе подготовки данных, риды были собраны в более длинные контиги с использованием metaSPADes v3.14.1, что позволило повысить точность идентификации генов в последующем анализе. И в них были идентифицированы ORF с помощью MetaGeneMark и сохранены в формате fasta.\nТаким образом была сформирована коллекция метагеномных данных, включающая в себя образцы фекалий, полученные от пациентов с депрессией (группа PD) и здоровых добровольцев (группа HC).\n\n\n\n\nKovtun, Alexey S., Olga V. Averina, Irina Y. Angelova, Roman A. Yunes, Yana A. Zorkina, Anna Y. Morozova, Alexey V. Pavlichenko, et al. 2022. “Alterations of the Composition and Neurometabolic Profile of Human Gut Microbiota in Major Depressive Disorder.” Biomedicines 10 (9): 2162. https://doi.org/10.3390/biomedicines10092162.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Дизайн исследования</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Kovtun, Alexey S., Olga V. Averina, Irina Y. Angelova, Roman A. Yunes,\nYana A. Zorkina, Anna Y. Morozova, Alexey V. Pavlichenko, et al. 2022.\n“Alterations of the Composition and Neurometabolic Profile of\nHuman Gut Microbiota in Major Depressive Disorder.”\nBiomedicines 10 (9): 2162. https://doi.org/10.3390/biomedicines10092162.",
+    "crumbs": [
+      "References"
+    ]
+  },
+  {
+    "objectID": "summary.html",
+    "href": "summary.html",
+    "title": "3  Summary",
+    "section": "",
+    "text": "In summary, this book has no content whatsoever.\n\n1 + 1\n\n[1] 2",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Summary</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#поиск-генов-патогенности",
+    "href": "intro.html#поиск-генов-патогенности",
+    "title": "2  Функциональный анализ метагеномов",
+    "section": "",
+    "text": "Скачать BLAST с официального сайта\nСоздать BLAST базу данных из скаченного фаста-файла c аминокислотными последовательностями\n\n\n\n\nНайти открытые рамки считывания в собранных контигах MetaGeneMark ?\nВыравнивание готовых ОРС на базу данных VFDB (версия VFDB_setA_pro) с использованием BLASTp (версия ncbi-blast-2.16.0+).",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Функциональный анализ метагеномов</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#схема-исследования",
+    "href": "index.html#схема-исследования",
+    "title": "Сравнение генов патогенности (вирулентности) в метагеномах изолятов кишечной микробиоты у здоровых людей и больных клинической депрессией (бакалаврская работа)",
+    "section": "1.1 Схема исследования",
+    "text": "1.1 Схема исследования\nОбщий план метагеномного анализа, проведенного в рамках данного исследования, представлен на Figure 1.1. Этапы подготовки образцов, фильтрации данных и сборки метагеномных ридов в контиги, выполненные в предшествующем исследовании нашей лаборатории “Изменения состава и нейрометаболического профиля кишечной микробиоты человека при большом депрессивном расстройстве” 2022 года (Kovtun et al. 2022), обозначены зеленым цветом. Голубым цветом обозначены этапы обработки данных, которые были реализованы непосредственно в данной работе. Синим цветом выделены методы статистического сравнения, примененные на различных этапах нашего анализа.\n\n\n\n\n\n\nFigure 1.1: Схема проведения метагеномного анализа",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Дизайн исследования</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#подготовка-и-фильтрация-метагеномных-ридов",
+    "href": "index.html#подготовка-и-фильтрация-метагеномных-ридов",
+    "title": "Сравнение генов патогенности (вирулентности) в метагеномах изолятов кишечной микробиоты у здоровых людей и больных клинической депрессией (бакалаврская работа)",
+    "section": "1.2 Подготовка и фильтрация метагеномных ридов",
+    "text": "1.2 Подготовка и фильтрация метагеномных ридов\nПервоначально, в рамках предшествующего исследования, из каждого образца фекалий была выделена общая геномная ДНК с использованием набора QIAamp PowerFecal Pro DNA Kit (Qiagen, Германия) в соответствии с рекомендациями производителя. Далее были созданы метагеномные библиотеки с использованием подхода “shotgun-sequencing”. Данный подход включал случайное фрагментирование ДНК до средней длины 350 пар оснований с использованием Covaris M220 (Covaris LLC., США), секвенирование парных прочтений (paired-end reads) на платформе Illumina HiSeq X Ten (Illumina Inc., США) и последующий контроль качества с использованием FastQC v0.11.5 .\nДля обеспечения высокого качества данных, исключения влияния артефактов секвенирования и контаминации ДНК хозяина, была выполнена строгая фильтрация ридов. В первую очередь, был произведен тримминг ридов с использованием Trimmomatic v0.39 с целью удаления низкокачественных участков и адаптеров. Затем, для удаления ридов, происходящих от ДНК человека, было проведено выравнивание ридов на референсный геном человека (hg19) с использованием Bowtie2 (версия 2.4.17). Риды, не картирующиеся на геном человека, были сохранены для дальнейшего анализа, что позволило сфокусироваться исключительно на микробном сообществе.\nНа заключительном этапе подготовки данных, риды были собраны в более длинные контиги с использованием metaSPADes v3.14.1, что позволило повысить точность идентификации генов в последующем анализе. И в них были идентифицированы ORF с помощью MetaGeneMark и сохранены в формате fasta.\nТаким образом была сформирована коллекция метагеномных данных, включающая в себя образцы фекалий, полученные от пациентов с депрессией (группа PD) и здоровых добровольцев (группа HC).\n\n\n\n\nKovtun, Alexey S., Olga V. Averina, Irina Y. Angelova, Roman A. Yunes, Yana A. Zorkina, Anna Y. Morozova, Alexey V. Pavlichenko, et al. 2022. “Alterations of the Composition and Neurometabolic Profile of Human Gut Microbiota in Major Depressive Disorder.” Biomedicines 10 (9): 2162. https://doi.org/10.3390/biomedicines10092162.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Дизайн исследования</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#схема-исследования-1",
+    "href": "index.html#схема-исследования-1",
+    "title": "Сравнение генов патогенности (вирулентности) в метагеномах изолятов кишечной микробиоты у здоровых людей и больных клинической депрессией (бакалаврская работа)",
+    "section": "2.1 Схема исследования",
+    "text": "2.1 Схема исследования\nОбщий план метагеномного анализа, проведенного в рамках данного исследования, представлен на Figure 2.1. Этапы подготовки образцов, фильтрации данных и сборки метагеномных ридов в контиги, выполненные в предшествующем исследовании нашей лаборатории “Изменения состава и нейрометаболического профиля кишечной микробиоты человека при большом депрессивном расстройстве” 2022 года (Kovtun et al. 2022), обозначены зеленым цветом. Голубым цветом обозначены этапы обработки данных, которые были реализованы непосредственно в данной работе. Синим цветом выделены методы статистического сравнения, примененные на различных этапах нашего анализа.\n\n\n\n\n\n\nFigure 2.1: Схема проведения метагеномного анализа",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Дизайн исследования</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#подготовка-и-фильтрация-метагеномных-ридов-1",
+    "href": "index.html#подготовка-и-фильтрация-метагеномных-ридов-1",
+    "title": "Сравнение генов патогенности (вирулентности) в метагеномах изолятов кишечной микробиоты у здоровых людей и больных клинической депрессией (бакалаврская работа)",
+    "section": "2.2 Подготовка и фильтрация метагеномных ридов",
+    "text": "2.2 Подготовка и фильтрация метагеномных ридов\nПервоначально, в рамках предшествующего исследования, из каждого образца фекалий была выделена общая геномная ДНК с использованием набора QIAamp PowerFecal Pro DNA Kit (Qiagen, Германия) в соответствии с рекомендациями производителя. Далее были созданы метагеномные библиотеки с использованием подхода “shotgun-sequencing”. Данный подход включал случайное фрагментирование ДНК до средней длины 350 пар оснований с использованием Covaris M220 (Covaris LLC., США), секвенирование парных прочтений (paired-end reads) на платформе Illumina HiSeq X Ten (Illumina Inc., США) и последующий контроль качества с использованием FastQC v0.11.5 .\nДля обеспечения высокого качества данных, исключения влияния артефактов секвенирования и контаминации ДНК хозяина, была выполнена строгая фильтрация ридов. В первую очередь, был произведен тримминг ридов с использованием Trimmomatic v0.39 с целью удаления низкокачественных участков и адаптеров. Затем, для удаления ридов, происходящих от ДНК человека, было проведено выравнивание ридов на референсный геном человека (hg19) с использованием Bowtie2 (версия 2.4.17). Риды, не картирующиеся на геном человека, были сохранены для дальнейшего анализа, что позволило сфокусироваться исключительно на микробном сообществе.\nНа заключительном этапе подготовки данных, риды были собраны в более длинные контиги с использованием metaSPADes v3.14.1, что позволило повысить точность идентификации генов в последующем анализе. И в них были идентифицированы ORF с помощью MetaGeneMark и сохранены в формате fasta.\nТаким образом была сформирована коллекция метагеномных данных, включающая в себя образцы фекалий, полученные от пациентов с депрессией (группа PD) и здоровых добровольцев (группа HC).\n\n\n\n\nKovtun, Alexey S., Olga V. Averina, Irina Y. Angelova, Roman A. Yunes, Yana A. Zorkina, Anna Y. Morozova, Alexey V. Pavlichenko, et al. 2022. “Alterations of the Composition and Neurometabolic Profile of Human Gut Microbiota in Major Depressive Disorder.” Biomedicines 10 (9): 2162. https://doi.org/10.3390/biomedicines10092162.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Дизайн исследования</span>"
+    ]
+  }
+]
