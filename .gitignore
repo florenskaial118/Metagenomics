@@ -1,4 +1,11 @@
 Blast-results/
+Kraken-results/
+Readcounts/
 Obtained-data/
+Signature-pairs/
 Software/
 /.quarto/
+.*
+.Rhistory
+.Rproj.user/
+!/.gitignore

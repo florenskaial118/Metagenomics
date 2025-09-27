@@ -6,36 +6,75 @@ engine: knitr
 
 ## Поиск генов патогенности
 
-1.  Скачать BLAST с [официального сайта](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+)
+Здесь будети идти обработка следующих данных из работы [@kovtun2022]:
 
-2.  Создать BLAST базу данных из [скаченного](https://www.mgc.ac.cn/VFs/download.htm) фаста-файла c аминокислотными последовательностями
+1\. Обрезанные риды (на этапе подсчета ридкаунтов)
+
+2\. Сборки (для таксономической классификации)
+
+3\. ОРС (АА и НТ) в сборках (АА для выравнивания против базы данных генов патогенности, НТ для подсчета ридкаунтов)
+
+### Скачать BLAST с [официального сайта](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+)
+
+Для более быстрого выполнения покажем пример поиска генов против небольшой базы данных генов патогенности [VFDB](https://www.mgc.ac.cn/VFs/main.htm): Protein Sequences of core dataset (VFDB_setA_pro.fas), однако в дипломной работе использовалась полная версия: Protein Sequences of full dataset (VFDB_setB_pro.fas) со [страницы скачивания](https://www.mgc.ac.cn/VFs/download.htm)
+
+### Создать BLAST базу данных из скаченного фаста-файла c аминокислотными последовательностями
+
+Пример строки из фаста-файла базы данных:
 
 ```{bash}
+#| echo: false
 head -5 VFDB-database/VFDB_setA_pro.fas
 ```
 
+Создаем базу данных:
+
 ```{bash}
+#| code-fold: false
 Software/ncbi-blast-2.16.0+/bin/makeblastdb \
     -in VFDB-database/VFDB_setA_pro.fas \
     -dbtype 'prot' \
     -out VFDB-database/VFDB_setA_pro/VFDB_setA_pro
 ```
 
-3.  Найти открытые рамки считывания в собранных контигах MetaGeneMark ?
-4.  Выравнивание готовых ОРС на базу данных [VFDB](https://www.mgc.ac.cn/VFs/main.htm) (версия *VFDB_setA_pro*) с использованием BLASTp (версия *ncbi-blast-2.16.0+*).
+Используем samtools faidx, чтобы получить длины последовательностей (референсов) в базе данных:
 
 ```{bash}
 #| eval: false
+#| code-fold: false
+#source /Users/lidaflorenskaya/miniconda3/bin/activate py3_study
+#conda install bioconda::samtools
+samtools faidx VFDB-database/VFDB_setA_pro.fas
+```
+
+Получили файл с расширением .fas.fai, в котором записаны
+
+| sseqid | ref_length | etc |
+|----|----|----|
+| Name of this reference sequence | Total length of this reference sequence, in bases | byte_start, bases_line, bytes_line |
+
+```{bash}
+#| echo: false
+head -5 VFDB-database/VFDB_setA_pro.fas.fai
+```
+
+Для настройки питона в RStudio использовались советы со [страницы](https://stackoverflow.com/questions/56153765/how-to-change-the-default-python-version-path-in-rstudio)
+
+### Выравнивание готовых ОРС на базу данных с использованием BLASTp (версия *ncbi-blast-2.16.0+*).
+
+```{bash}
+#| eval: false
+#| code-fold: false
 for file in Obtained-data/ORFs/AA/*_orf_aa_names.fasta; do
 
-    filename="${file##*/}"  # Get the filename without the path
+    filename="${file##*/}"  #получаем имя файла из его пути
 
-    # Use a regex to extract the components
+    # Используем регулярное выражение, чтобы достать из названия файла информацию о пациенте
     [[ "$filename" =~ ([A-Za-z]+)_([0-9]+)_orf_aa_names\.fasta ]]
     prefix="${BASH_REMATCH[1]}"
     number="${BASH_REMATCH[2]}"
 
-    # Construct the output filename.
+    # Формируем файл, куда запишем результат
     output_file="Blast-results/Blast-results-raw/raw_blast_file_${prefix}_${number}.csv"
 
     echo "Processing: $file"
@@ -52,38 +91,265 @@ done
 echo "Script finished."
 ```
 
-Выполяем эту долгую ячейку с помощью отдельной сессии: `screen -S BLAST`; `sh Scripts/BLAST.sh`; `screen -r BLAST`
+Выполяем эту долгую ячейку с помощью процесса на заднем фоне: `sh Scripts/BLAST.sh &`
+
+Результат работы BLASTp получили в [tabular format 6](https://www.metagenomics.wiki/tools/blast/blastn-output-format-6)
+
+| orf | sseqid | pident | length | etc. |
+|----|----|----|----|----|
+| qseqid - query or source (gene) sequence id | subject or target (reference genome) sequence id | percentage of identical positions | alignment length (sequence overlap) | mismatch, gapopen, qstart, qend, sstart, send, evalue, bitscore |
 
 ```{bash}
-head -5 Blast-results/Blast-results-raw/raw_blast_file_HC_34.csv
+#| echo: false
+head -5 Blast-results/Blast-results-filtered/filtered_blast_file_PD_4.csv 
 ```
 
+BLAST нашел несколько совпадений для каждой ОРС с базой данных. Первый вариант в результатах для каждой ОРС - это самое лучшее совпадение.
 
-Критерии: прогент гомологии *“pident”* \>= 90%, разница в длине выровненных последовательностей \<= 5%.
+### Сортировка результатов выравнивания
 
-Таксономическая аннтотация контигов
+В данной работе, для обеспечения высокой достоверности идентификации, был установлен строгий порог гомологии (*'pident'* ) на уровне 90%, а допустимая разница в длине последовательностей не превышала 5%.
+
+```{python}
+import pandas as pd
+import os
+from tqdm import tqdm
+import time
+import re
+```
+
+```{python}
+#| eval: false
+
+#считываем файл с информацией про нашу базу данных
+database = pd.read_csv('Obtained-data/VFDB-database/modified_VFDB_setB_full_pro.fas.fai', sep='\t', header=None,
+                    names=['sseqid', 'ref_length', 'byte_start', 'bases_line', 'bytes_line'])[['sseqid', 'ref_length']]
+
+pattern = r".*\.csv$"
+regex = re.compile(pattern)
+directory = 'Obtained-data/Blast-results-raw'
+
+#обрабатываем все сырые результаты бласта, они лежат в одной папке и имеют формат .csv
+for filename in tqdm(os.listdir("Obtained-data/Blast-results-raw"), desc = 'tqdm() Progress Bar'):
+    time.sleep(0.5)
+    if regex.match(filename):
+      print(f"\n{filename}\n")
+      filepath = os.path.join(directory, filename)  
+      #достаем из названия файла инфу о пациенте
+      patient = filename.split('file_')[1].split('.')[0]
+      time.sleep(0.5)
+      bl = pd.read_csv(filepath, sep="\t", header=None, 
+                       names=['orf', 'sseqid' ,'pident', 'length', 'mismatch', 'gapopen', 'qstart' ,'qend', 'sstart' ,'send', 'evalue', 'bitscore']) 
+      #оставляем только лучшее совпадение
+      bl = bl.drop_duplicates(subset=['orf'], keep='first') 
+      #ставим пороговый процент гомологии в 90%
+      bl = bl[bl['pident'] >= 90]
+      #объединяем с инфой о референсных последовательностях
+      merged = bl.merge(database, on='sseqid', how='inner')
+      #print(merged.to_markdown())
+      #выбираем те выравнивания, где длины найденной и референсной последовательности отличаются не более, чем на 5%
+      merged_sorted = merged.loc[(merged['ref_length'] / merged['length'] >= 0.95) & (merged['ref_length'] / merged['length'] < 1.05)]
+      
+      merged_sorted.to_csv(f'Blast-results/Blast-results-filtered/filtered_blast_file_{patient}.csv', index=False, sep='\t')
+```
+
+### Таксономическая аннтотация контигов
+
+Скачаем [Kraken2](https://github.com/DerrickWood/kraken2.git%20Software/kraken) и выполним установку:
+
+`git clone https://github.com/DerrickWood/kraken2.git Software/kraken2`
+
+`mkdir Software/kraken2/KRAKEN2`
+
+`bash Software/kraken2/install_kraken2.sh KRAKEN2`
+
+Мы делаем аннотацию контигов, поэтому нам важно сохранить информацию об ID контига, чтобы потом сопоставить с генами, которые были в нем найдены. Для этого запустим Кракен2 со стандартным репортом и затем также сделаем mpa-style репорт, чтобы достать полную информацию о таксономичесокй принадлежности. Для этого скачаем [KrakenTools](https://github.com/jenniferlu717/KrakenTools.git%20Software/KrakenTools):
+
+`git clone https://github.com/jenniferlu717/KrakenTools.git Software/KrakenTools`
+
+Код запуска:
 
 ```{bash}
 #| eval: false
-CONTIGS_DIR="/mnt/storage/kovtunas/Depression_data/assemblies"
-KRAKEN_OUTPUT_DIR="/home/lidaf/1_part/Kraken/Kraken_outputs"
-KRAKEN_REPORT_DIR="/home/lidaf/1_part/Kraken/Kraken_reports"
-KRAKEN_MPA_REPORT_DIR="/home/lidaf/1_part/Kraken/Kraken_mpa_reports"
+#| code-fold: false
 
-for file_path in "$CONTIGS_DIR"/*\.fasta; do
-    filename=$(basename "$file_path")
-    type=$(echo "$filename" | cut -d'.' -f1 | tr '[:lower:]' '[:upper:]')
-    kraken_output_file="$KRAKEN_OUTPUT_DIR/${type}.Kraken_output.txt"
-    kraken_report_file="$KRAKEN_REPORT_DIR/${type}.Kraken_report.txt"
-    /home/galanova/kraken2/KRAKEN2/kraken2 \
+KRAKEN_DIR="/home/lidaf/Metagenomics/Kraken-results"
+
+
+for file in Obtained-data/assemblies/*.fasta; do
+    filename="${file##*/}"  # Get the filename without the path
+
+    # Use a regex to extract the components
+    [[ "$filename" =~ ([A-Za-z]+)_([0-9]+)\.fasta ]]
+    prefix="${BASH_REMATCH[1]}"
+    number="${BASH_REMATCH[2]}"
+    
+    kraken_output_file="Kraken-results/Kraken_outputs/kraken_output_file_${prefix}_${number}.txt"
+    kraken_report_file="Kraken-results/Kraken_reports/kraken_report_file_${prefix}_${number}.txt"
+    kraken_mpa_report_file="Kraken-results/Kraken_mpa_reports/kraken_mpa_report_file_${prefix}_${number}.txt"
+    
+    echo "Processing: $file"
+
+    Software/kraken2/KRAKEN2/kraken2 \
         --db /home/kovtunas/kraken2_pluspf \
         --threads 20 \
         --confidence 0.01 \
         --output "$kraken_output_file" \
         --report "$kraken_report_file"  \
-        "$file_path"
-    python '/home/lidaf/KrakenTools/kreport2mpa.py' -r "$file_path" -o "$kraken_mpa_report_file" 
-    printf "%s\n" "$type"
+        "$file"
+
+    python 'Software/KrakenTools/kreport2mpa.py' -r "$kraken_report_file" -o "$kraken_mpa_report_file" --intermediate-ranks
 done
 echo "Script finished."
+
+```
+
+`bash Scripts/KRAKEN-assemblies.sh &`
+
+В согласии с [мануалом](https://github.com/DerrickWood/kraken2/wiki/Manual), полученные текстовые файлы имеют следующие форматы:
+
+1.  Формат вывода:
+
+| C/U | Contig | ID | etc. |
+|----|----|----|----|
+| a one letter code indicating that the sequence was either classified or unclassified | The sequence ID, obtained from the FASTA/FASTQ header | The taxonomy ID Kraken 2 used to label the sequence; this is 0 if the sequence is unclassified | The length of the sequence in bp, a space-delimited list indicating the LCA mapping of each k-mer in the sequence(s) |
+
+```{bash}
+#| echo: false
+head -c 150 Kraken-results/Kraken_outputs/kraken_output_file_pd_4.txt
+```
+
+2.  Формат обычного отчета:
+
+| Abundance | All reads | Cur reads | Level_code | ID | Name |
+|----|----|----|----|----|----|
+| Percentage of reads covered by the clade rooted at this taxon | Number of reads covered by the clade rooted at this taxon | Number of reads assigned directly to this taxon | A rank code, indicating (U)nclassified, (D)omain, (K)ingdom, (P)hylum, (C)lass, (O)rder, (F)amily, (G)enus, or (S)pecies. All other ranks are simply '-' | NCBI taxonomy ID | Indented scientific name |
+
+```{bash}
+#| echo: false
+head -10 Kraken-results/Kraken_reports/kraken_report_file_pd_4.txt
+```
+
+3.  Формат mpa-отчета:
+
+| full taxonomy of each taxon | All reads |
+|----|----|
+| Each rank's name separated by a pipe character | Number of reads covered by the clade rooted at this taxon |
+
+```{bash}
+#| echo: false
+head -8 Kraken-results/Kraken_mpa_reports/kraken_mpa_report_file_pd_4.txt
+```
+
+Теперь объединим оба вида репортов построчно - убрав первые две строчки из обычного репорта, а затем - объединим с обычным output через ID таксона
+
+```{python}
+#| eval: false
+
+KRAKEN_OUTPUT_DIR="Kraken-results/Kraken_outputs"
+KRAKEN_REPORT_DIR="Kraken-results/Kraken_reports"
+KRAKEN_MPA_REPORT_DIR="Kraken-results/Kraken_mpa_reports"
+KRAKEN_TABLES_DIR="Kraken-results/Kraken_tables"
+for filename in tqdm(os.listdir(KRAKEN_OUTPUT_DIR), desc='Progress Bar'):
+  
+    kraken_output_path = os.path.join(KRAKEN_OUTPUT_DIR, filename)
+    kraken_report_path = os.path.join(KRAKEN_REPORT_DIR, filename.replace('output','report'))
+    kraken_mpa_report_path = os.path.join(KRAKEN_MPA_REPORT_DIR, filename.replace('output','mpa_report'))
+    kraken_table_path = os.path.join(KRAKEN_TABLES_DIR, filename.replace('output','table'))
+    
+    kraken_output = pd.read_csv(kraken_output_path, sep = '\t',names = ['"C"/"U"','Contig','ID','Length','List'])[['Contig','ID']]
+    kraken_report = pd.read_csv(kraken_report_path, sep = '\t', 
+    names = ['Abundance','All reads','Cur reads','Level_code','ID','Name'])[['ID']].loc[2:,:].reset_index(drop = True)
+    data = []
+    
+    with open(kraken_mpa_report_path, 'r') as f:
+        for line in f:
+            taxonomy_string, count = line.split('\t')
+            taxonomy_ranks = taxonomy_string.split('|')
+            row = {}  # Initialize the row dictionary
+            for rank in taxonomy_ranks:
+                rank_type, rank_name = rank.split('__', 1)  # Split at the first occurrence
+                if rank_type in ['d','p','s','s1']:
+                  row[rank_type] = rank_name
+
+            data.append(row)
+
+    taxonomy_df = pd.DataFrame(data)
+    if len(taxonomy_df) != len(kraken_report):
+        print(len(taxonomy_df),len(kraken_report))
+        raise ValueError("The number of rows in taxonomy file does not match the number of rows in metadata file, merging cannot be performed. ")
+    # 4. Merge the DataFrames based on index
+    Tax_ID_df = pd.concat([kraken_report, taxonomy_df], axis=1) # Concatenate horizontally along the columns
+    merged = pd.merge(Tax_ID_df,kraken_output, on = 'ID',how = 'right')
+    merged = merged.dropna(axis=1, how='all')
+    merged.to_csv(kraken_table_path,index = False)    
+```
+
+Формат полученной таблицы:
+
+```{bash}
+#| echo: false
+head -10 Kraken-results/Kraken_tables/kraken_table_file_pd_4.txt
+```
+
+### Подсчет встречаемости ОРС (нуклеотидные последовательности)
+
+Код запуска:
+
+```{bash}
+#| eval: false
+#| code-fold: false
+
+#source /Users/lidaflorenskaya/miniconda3/bin/activate py3_study
+#conda install bioconda::bwa
+aligned_reads_directory="Readcounts/aligned_reads"
+
+for file in Obtained-data/ORFs/NT/*_orf_nt_names.fasta; do
+    filename="${file##*/}"
+
+    [[ "$filename" =~ ([A-Za-z]+)_([0-9]+)_orf_nt_names\.fasta ]]
+    prefix="${BASH_REMATCH[1]}"
+    number="${BASH_REMATCH[2]}"
+    
+    # Индексируем нуклеотидные последовательности ОРС
+    bwa index "$file" 
+    
+    # Картируем риды на ОРС
+    bwa mem "$file" \ 
+    Obtained-data/Trimmed-reads/${prefix}_${number}_R1.fq.gz \
+    Obtained-data/Trimmed-reads/${prefix}_${number}_R2.fq.gz \
+    > "$aligned_reads_directory/aligned_read_${prefix}_${number}.sam"
+
+    cd Readcounts/aligned_reads # чтобы все доп. технические файлы создавались в этой директории
+    
+    # Переводим SAM в BAM
+    samtools view -@ 10 -b "aligned_read_${prefix}_${number}.sam" -F 0x4 | samtools sort -@ 10 - > "aligned_read_${prefix}_${number}.bam"
+    
+    #Индексируем BAM
+    samtools index "aligned_read_${prefix}_${number}.bam"
+
+    #Удалим большой SAM, который нам не нужен
+    rm -r "$aligned_reads_directory/aligned_read_${prefix}_${number}.sam"
+    
+    cd -
+    
+    # Подсчитываем ридкаунты и записываем результат в файл
+    samtools idxstats "$aligned_reads_directory/aligned_read_${prefix}_${number}.bam" \
+    > Readcounts/Readcount-result/Readcount_result_${prefix}_${number}.txt
+    
+done
+
+```
+
+В результате вышел тектовый файл следующего формата:
+
+| orf | sequence length | readcounts | unmapped read-segments |
+|----|----|----|----|
+| reference sequence name | sequence length | mapped read-segments | unmapped read-segments |
+
+```{bash}
+#| echo: false
+head -3 Readcounts/Readcount-results/Readcount_result_pd_4.txt
+echo '...'
+tail -4 Readcounts/Readcount-results/Readcount_result_pd_4.txt
 ```

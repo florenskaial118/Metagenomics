@@ -1,0 +1,537 @@
+# Создадим матрицу сигнатурных пар **патоген-ген**
+
+## Объединим результаты работы BLAST, KRAKEN2 и SAMtools inxstat
+
+Для этого будем использовать ID контигов и ОРС
+```{python}
+import pandas as pd
+import os
+from tqdm import tqdm
+import time
+import re
+
+#определим функции
+def drop_gene_number_from_scaffold_name(x): #модификация названия -> оставляем только имя cкаффолда
+    return (str(x).split("$")[0])
+
+def modify_genus_name(x): #уберем (taxid #) из названия таксона
+    return (str(x).split(' (')[0])
+
+def get_gene_name(x): #берем имя гена после $ в sseqid из VFDB
+    return (str(x).split("$")[1])
+
+
+```
+
+
+```{python}
+#| eval: false
+
+pattern = r".*\.csv$"
+regex = re.compile(pattern)
+directory = 'Blast-results/Blast-results-filtered'
+
+dfs = []
+for filename in tqdm(os.listdir(directory), desc = 'tqdm() Progress Bar'):
+    time.sleep(0.5)
+    if regex.match(filename):
+      print(f"\n{filename}\n")
+      filepath = os.path.join(directory, filename)  
+      patient = filename.split('file_')[1].split('.')[0]
+      
+      #Читаем результат Blast
+      blast = pd.read_csv(filepath, sep='\t')[['orf', 'sseqid','pident']]
+      blast['Gene'] = blast['sseqid'].apply(get_gene_name)
+
+      rc = pd.read_csv(f'Readcounts/Readcount-results/Readcount_result_{patient}.txt',sep="\t",header=None,
+                     names=['orf','sequence length','readcounts','unmapped read-segments'],dtype={'readcount': 'Int64'})[['orf','readcounts']]
+      #удаляем у RC * c конца
+      rc = rc.iloc[:-1,:]
+      
+      #Объединяем RC и Bl по названию гена в скаффолде
+      rc_blast = rc.merge(blast, how='inner', on='orf')
+      rc_blast['Contig'] = rc_blast['orf'].apply(drop_gene_number_from_scaffold_name)
+      #суммируем ридкаунты для одинаковых генов в скаффолде
+      rc_blast = rc_blast.groupby(["Gene"]).agg({'readcounts': 'sum','Contig':'first','sseqid':'first','pident':'mean'}).reset_index()
+      #Читаем результат Kraken
+      kraken_names = pd.read_csv(f'Kraken-results/Kraken_tables/Kraken_table_file_{patient}.txt', sep=",", nrows=0).columns.tolist()
+      num_cols = len(kraken_names)
+      dtype_dict = {kraken_names[0] : int} # First column is int
+      for j in range(1, num_cols):
+          dtype_dict[kraken_names[j]] = str
+          
+      kraken = pd.read_csv(f'Kraken-results/Kraken_tables/Kraken_table_file_{patient}.txt', sep=",",dtype=dtype_dict)
+      #Объединяем с Kr по имени скаффолда 
+      rc_blast_kraken = kraken.merge(rc_blast, on='Contig')
+      rc_blast_kraken['Patient'] = patient
+      rc_blast_kraken.drop('Contig',axis = 1,inplace = True)
+      dfs.append(rc_blast_kraken)
+    
+    
+result = pd.concat(dfs)
+
+#форматируем название таксона и добавляем функции генов из данных, заложенных в sseqid
+result = result(axis=1, how='all')
+result = result[['d','p','s','ID','Patient','Gene','pident','readcounts','sseqid']].sort_values(['d','p','s','ID','Patient','Gene','pident','readcounts','sseqid']).reset_index(drop = True)
+result.to_csv('Signature-pairs/taxon-gene-example.csv',index = False)
+```
+
+Полученная таблица имеет вид:
+```{r}
+#| echo: False
+table <- read.csv("Signature-pairs/taxon-gene-full.csv")
+knitr::kable(table[1:10, ], align = "c")
+```
+
+## Сделаем сводную таблицу с генами, которые принадлежат патогенным видам, согласно [списку патогенов CZ ID Pathogen List ](https://czid.org/pathogen_list)
+
+```{python}
+pwd_hc = pd.read_csv('Signature-pairs/taxon-gene-full.csv')
+
+pwd_hc['readcounts'] = pwd_hc['readcounts'].astype(float)
+pwd_hc['pident'] = pwd_hc['pident'].astype(float)
+
+pwd_hc['Gene_info'] = pwd_hc['sseqid'].apply(lambda x: (x.split('_[')[0]))
+
+#Оставми только те гены, которые принадлежат патогенам
+IDs = pd.read_csv('Obtained-data/Pathogen-data/CZ_ID_pathogen_list_2024.tsv', sep='\t')
+IDs['taxon_name'] = IDs['taxon_name'].str.replace(' ', '_')
+pwd_hc = pwd_hc.loc[pwd_hc['s'].isin(IDs['taxon_name'])]
+
+df = pwd_hc.pivot_table(columns='Patient', index=['p','s','Gene_info', 'pident'], values='readcounts', aggfunc='sum').fillna(0).reset_index()
+columns = df.columns
+df = df.sort_values(['p','s','Gene_info', 'pident']).reset_index(drop = True)
+
+aggregation_dict = {'pident': 'mean'}
+for col in list(columns[3:]):
+    aggregation_dict[col] = 'sum' 
+
+df = df.groupby(['p','s','Gene_info']).agg(aggregation_dict).reset_index()
+
+df = df[['p','s','Gene_info','pident']+sorted(columns[4:], key=lambda x: (x.split('_')[0],int(x.split('_')[1])))]
+df.to_csv('Signature-pairs/taxon-gene-pivot.csv', index = False)
+
+```
+Она имеет следующий вид, где гены по строчкам, а пациенты по столбцам:
+```{r}
+#| echo: False
+table <- read.csv("Signature-pairs/taxon-gene-pivot.csv")
+knitr::kable(table[20:35, ], align = "c")
+```
+
+## Изобразим полученные результаты на Sankey-диаграммах
+```{python}
+import pandas as pd
+import plotly.graph_objects as go
+from plotly.colors import qualitative
+```
+
+```{python}
+#| output: false
+
+def get_function_group_colors(df, level_col):
+        df['Group'] = df['Patient'].str.extract(r'^(HC|PD)')[0]
+        level_groups = df.groupby([level_col, 'Group'])['readcounts'].sum().unstack().fillna(0)
+        level_groups = level_groups > 0
+        
+        level_colors = {}
+        for level in level_groups.index:
+            in_hc = level_groups.loc[level, 'HC'] if 'HC' in level_groups.columns else False
+            in_pd = level_groups.loc[level, 'PD'] if 'PD' in level_groups.columns else False
+            
+            if in_hc and in_pd:
+                level_colors[level] = "#FFB300"  # Желтый (оба)
+            elif in_hc:
+                level_colors[level] = '#2ECC71'  # Зеленый (HC)
+            elif in_pd:
+                level_colors[level] = '#E74C3C'  # Красный (PD)
+            else:
+                level_colors[level] = '#AAAAAA'
+        
+        return level_colors
+
+
+pwd_hc = pd.read_csv('Signature-pairs/taxon-gene-full.csv')[['Gene class', 'Gene', 'p','s', 's1','Gene function', 'Patient', 'readcounts']]
+IDs = pd.read_csv('Obtained-data/Pathogen-data/CZ_ID_pathogen_list_2024.tsv', sep='\t').iloc[:252]
+IDs['taxon_name'] = IDs['taxon_name'].str.replace(' ', '_')
+pathogen_df = pwd_hc.copy()
+pathogen_df = pathogen_df[pwd_hc['s'].isin(IDs['taxon_name'])]
+# Добавляем группу (HC/PD)
+pathogen_df['Group'] = pathogen_df['Patient'].apply(lambda x: x.split('_')[0])
+
+
+# Получаем все уникальные категории
+all_groups = sorted(pathogen_df['Group'].unique())
+all_pathogen_phyla = sorted(pathogen_df['p'].dropna().unique())
+all_pathogen_species = sorted(pathogen_df['s'].unique())
+pathogen_gene_funcs = sorted(pathogen_df['Gene class'].unique())
+
+group_colors = {'HC': 'rgba(0, 158, 115, 0.8)', 'PD': 'rgba(255, 0, 0, 0.8)'}  
+color_scale = qualitative.Plotly  # Basic Color Scale
+pathogen_func_colors = {func: color_scale[i % len(color_scale)] for i, func in enumerate(pathogen_gene_funcs)}
+
+nodes = all_groups + all_pathogen_phyla + all_pathogen_species + pathogen_gene_funcs
+node_indices = {node: i for i, node in enumerate(nodes)}
+
+# Build Links
+sources, targets, values, link_colors = [], [], [], []
+
+# Groups -> Phyla
+group_phylum_links = pathogen_df.groupby(['Group', 'p'])['readcounts'].sum().reset_index()
+for _, row in group_phylum_links.iterrows():
+    sources.append(node_indices[row['Group']])
+    targets.append(node_indices[row['p']])
+    values.append(row['readcounts'])
+    link_colors.append(group_colors[row['Group']])
+
+# Phyla -> Species
+phylum_species_links = pathogen_df.groupby(['p', 's', 'Group'])['readcounts'].sum().reset_index() 
+for _, row in phylum_species_links.iterrows():
+    sources.append(node_indices[row['p']])
+    targets.append(node_indices[row['s']])
+    values.append(row['readcounts'])
+    link_colors.append(group_colors[row['Group']])  
+
+# Species -> Gene Functions
+s_gene_links = pathogen_df.groupby(['s', 'Gene class', 'Group'])['readcounts'].sum().reset_index() 
+for _, row in s_gene_links.iterrows():
+    sources.append(node_indices[row['s']])
+    targets.append(node_indices[row['Gene class']])
+    values.append(row['readcounts'])
+    link_colors.append(group_colors[row['Group']])
+
+
+# Diagram Layout
+
+node_colors = (
+        [group_colors[g] for g in all_groups] +
+        [get_function_group_colors(pathogen_df, 'p').get(phylum, '#AAAAAA') for phylum in all_pathogen_phyla] +
+        [get_function_group_colors(pathogen_df, 's').get(species, '#AAAAAA') for species in all_pathogen_species] +
+        [get_function_group_colors(pathogen_df, 'Gene class').get(func, '#AAAAAA') for func in pathogen_gene_funcs]
+    )
+link = dict(source=sources, target=targets, value=values, color=link_colors)
+node = dict(pad=15, thickness=20, line=dict(color="black", width=0.5), label=nodes, color =node_colors)
+sankey = go.Sankey(link=link, node=node)
+fig = go.Figure(sankey)
+
+fig.update_layout(
+    title={
+        'text': "<b>Распределение генов патогенов по таксономическим группам</b>",
+        'y': 0.95, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top',
+        'font': {'size': 20, 'family': 'Palatino Linotype'}
+    },
+    font=dict(family="Palatino Linotype", size=16, color="black"),  
+    height=800, width=1400,  
+    margin=dict(t=100, b=80, l=40, r=40),  
+    plot_bgcolor='rgba(255,255,255,0.9)', paper_bgcolor='rgba(255,255,255,0.9)',
+    hovermode='x unified',
+    annotations=[
+        dict(x=0, y=1.05, xref='paper', yref='paper', align='left',
+             showarrow=False, bordercolor='rgba(0,0,0,0.2)', borderwidth=1, borderpad=4,
+             bgcolor='rgba(255,255,255,0.8)',
+             font=dict(size=16, family='Palatino Linotype'),
+             text="<b>Цвета связей:</b><br>"
+                     "<span style='color:rgba(0, 158, 115, 0.8)'>■ От здоровых пациентов (HC)</span><br>"
+                     "<span style='color:rgba(255, 5, 0, 0.8)'>■ От пациентов с депрессией (PD)</span>"),
+        dict(x=0.5, y=-0.1, xref='paper', yref='paper', showarrow=False,
+             font=dict(size=16, family='Palatino Linotype'),
+             text="<b>Уровни анализа:</b> Группы пациентов → Род патогена → Вид патогена → Функции генов")  
+    ]
+)
+
+#fig.show()
+
+fig.write_html("images/sankey_diagram.html")
+```
+
+Изобразим только патогенные виды:
+```{r}
+#| echo: false
+#| error: FALSE
+library(htmltools)
+includeHTML("images/sankey_diagram.html")
+```
+
+```{python}
+#| eval: false
+# Load and prepare data
+data = pd.read_excel('Signature-pairs/2full_genes.xlsx', index_col = 0)[['Класс-гена','Описание','Функция','Название кластера','Название гена']]#
+pwd_hc = pd.read_csv('Signature-pairs/taxon-gene-full.csv')[['Gene class', 'Gene', 'p','s', 's1','Gene function', 'Patient', 'readcounts']]
+IDs = pd.read_csv('Obtained-data/Pathogen-data/CZ_ID_pathogen_list_2024.tsv', sep='\t').iloc[:252]
+IDs['taxon_name'] = IDs['taxon_name'].str.replace(' ', '_')
+
+pwd_hc = pwd_hc.loc[~pwd_hc['s'].isna()]
+pwd_hc = pwd_hc.loc[pwd_hc['s'].apply(lambda x: len(x.split('_')) == 2)]
+#pwd_hc = pwd_hc.loc[pwd_hc['s'].isin(IDs['taxon_name'])]
+
+
+pwd_hc = pwd_hc.merge(data, left_on = 'Gene', right_on = 'Название гена')[['Класс-гена','Описание','Функция','Название кластера','Название гена','Patient','p','s','readcounts','Gene class']]
+# Добавляем группу (HC/PD)
+pwd_hc['Group'] = pwd_hc['Patient'].apply(lambda x: x.split('_')[0])
+
+# Add pathogen status to main data
+pwd_hc['Pathogen'] = pwd_hc['s'].isin(IDs['taxon_name'])
+
+# Split data
+pathogen_df = pwd_hc.loc[pwd_hc['Pathogen']].copy()
+n_pat_df = pwd_hc.loc[~pwd_hc['Pathogen']].copy()
+
+# Get all unique categories
+all_groups = sorted(set(pwd_hc['Group'].unique()))
+all_pathogen_species = sorted(pathogen_df['s'].unique())
+all_nonpathogen_species = sorted(n_pat_df['s'].unique())
+all_pathogen_phyla = sorted(pathogen_df['p'].unique())
+all_nonpathogen_phyla = sorted(n_pat_df['p'].unique())
+
+# Find gene functions present in both sides
+funcs = set(pwd_hc['Gene class'].unique())
+pathogen_gene_funcs = set(pathogen_df['Gene class'].unique())
+nonpathogen_gene_funcs = set(n_pat_df['Gene class'].unique())
+common_gene_funcs = sorted(pathogen_gene_funcs & nonpathogen_gene_funcs)
+pathogen_only_funcs = sorted(pathogen_gene_funcs - nonpathogen_gene_funcs)
+nonpathogen_only_funcs = sorted(nonpathogen_gene_funcs - pathogen_gene_funcs)
+
+# Initialize lists to store the data for the Sankey diagram
+sources = []
+targets = []
+values = []
+link_colors = []
+
+
+# Create variables for "not present" hierarchy.
+pathogen_only_not_present_species = "Not present in nonpathogens"
+pathogen_only_not_present_phyla = " "
+pathogen_only_not_present_groups = "  "
+
+
+# Create a dictionary to map nodes (species, phyla, groups, gene functions) to indices
+nodes = ([f"{group} (Pathogens)" for group in all_groups] +                  # Группы пациентов (0-1)
+    [f"{phylum} (P)" for phylum in all_pathogen_phyla] +        # Типы (2-N)
+    all_pathogen_species +  
+    common_gene_funcs+pathogen_only_funcs+nonpathogen_only_funcs +
+    all_nonpathogen_species +
+    [f"{phylum} (NP)" for phylum in all_nonpathogen_phyla] +
+    [f"{group} (Non-Pathogens)" for group in all_groups] + [pathogen_only_not_present_species,pathogen_only_not_present_phyla,pathogen_only_not_present_groups])
+
+
+
+node_indices = {node: i for i, node in enumerate(nodes)}
+
+
+
+# Create color mappings
+# Groups
+group_colors = {'HC': 'rgba(0, 158, 115, 0.8)', 'PD': 'rgba(255, 0, 0, 0.8)'}  
+
+# Function to determine group presence and assign colors
+def get_group_presence_colors(df, level_col):
+    # Extract group from Patient column (HC_... or PD_...)
+    df['Group'] = df['Patient'].str.extract(r'^(HC|PD)')[0]
+    
+    level_groups = df.groupby([level_col, 'Group'])['readcounts'].sum().unstack().fillna(0)
+    level_groups = level_groups > 0  # Convert to boolean presence/absence
+    
+    level_colors = {}
+    for level in level_groups.index:
+        in_hc = level_groups.loc[level, 'HC'] if 'HC' in level_groups.columns else False
+        in_pd = level_groups.loc[level, 'PD'] if 'PD' in level_groups.columns else False
+        
+        if in_hc and in_pd:
+            level_colors[level] = "#FFB300"  # Yellow (both)
+        elif in_hc:
+            level_colors[level] = '#2ECC71'  # Green (HC only)
+        elif in_pd:
+            level_colors[level] = '#E74C3C'  # Red (PD only)
+        else:
+            level_colors[level] = '#AAAAAA'  # Grey (shouldn't happen)
+    
+    return level_colors
+
+# Get color mappings for species and phyla
+pathogen_species_colors = get_group_presence_colors(pathogen_df, 's')
+nonpathogen_species_colors = get_group_presence_colors(n_pat_df, 's')
+pathogen_phyla_colors = get_group_presence_colors(pathogen_df, 'p')
+nonpathogen_phyla_colors = get_group_presence_colors(n_pat_df, 'p')
+
+
+
+# 1. Left Groups → Phyla (Pathogen side)
+group_phylum_links = pathogen_df.groupby(['Group', 'p'])['readcounts'].sum().reset_index()
+for _, row in group_phylum_links.iterrows():
+    sources.append(node_indices[f"{row['Group']} (Pathogens)"])
+    targets.append(node_indices[f"{row['p']} (P)"])
+    values.append(max(10,row['readcounts']))
+    link_colors.append(group_colors[row['Group']])  # Red for pathogen side
+
+# 2. Phyla → Pathogens
+phylum_species_links = pathogen_df.groupby(['p', 's','Group'])['readcounts'].sum().reset_index()
+for _, row in phylum_species_links.iterrows():
+    sources.append(node_indices[f"{row['p']} (P)"])
+    targets.append(node_indices[row['s']])
+    values.append(max(17000,row['readcounts']))
+    link_colors.append(group_colors[row['Group']])  # Red for pathogen side
+
+# 3. Pathogens → Gene Functions
+species_gene_links = pathogen_df.groupby(['s', 'Gene class','Group'])['readcounts'].sum().reset_index()
+for _, row in species_gene_links.iterrows():
+    if row['Gene class'] in common_gene_funcs:
+        targets.append(node_indices[row['Gene class']])
+    elif row['Gene class'] in pathogen_only_funcs:
+        targets.append(node_indices[row['Gene class']])
+    else:
+        continue
+        
+    sources.append(node_indices[row['s']])
+    values.append(row['readcounts'])
+    link_colors.append(group_colors[row['Group']])  # Red for pathogen side
+
+# 4. For pathogen-only functions: connect to "not present" hierarchy
+# For pathogen-only functions: 
+for func in pathogen_only_funcs:
+    # First get the total readcounts for this function across all pathogens
+    func_readcounts = pathogen_df[pathogen_df['Gene class'] == func]['readcounts'].sum()
+    
+    
+    # Then connect to "not present" hierarchy using proportional readcounts
+    # Function → "not present in non-path species"
+    sources.append(node_indices[func])
+    targets.append(node_indices[pathogen_only_not_present_species])
+    values.append(func_readcounts)  # Reduced for visibility
+    link_colors.append('rgba(150, 150, 150, 0.4)')
+    
+    # "not present in non-path species" → "not present in non-path phyla"
+    sources.append(node_indices[pathogen_only_not_present_species])
+    targets.append(node_indices[pathogen_only_not_present_phyla])
+    values.append(func_readcounts)  # Further reduced
+    link_colors.append('rgba(150, 150, 150, 0.4)')
+    
+    # "not present in non-path phyla" → "not present in non-path groups"
+    sources.append(node_indices[pathogen_only_not_present_phyla])
+    targets.append(node_indices[pathogen_only_not_present_groups])
+    values.append(func_readcounts)  # Smallest value
+    link_colors.append('rgba(150, 150, 150, 0.4)')
+
+
+# 5. Common gene functions → Non-pathogens
+gene_species_links = n_pat_df.groupby(['Gene class', 's','Group'])['readcounts'].sum().reset_index()
+for _, row in gene_species_links.iterrows():
+    if row['Gene class'] in common_gene_funcs:
+        sources.append(node_indices[row['Gene class']])
+        targets.append(node_indices[row['s']])
+        values.append(max(15000,row['readcounts']))
+        link_colors.append(group_colors[row['Group']])  # Grey for middle links
+
+# 6. Non-pathogens → Phyla (Non-pathogen side)
+species_phylum_links = n_pat_df.groupby(['s', 'p','Group'])['readcounts'].sum().reset_index()
+for _, row in species_phylum_links.iterrows():
+    sources.append(node_indices[row['s']])
+    targets.append(node_indices[f"{row['p']} (NP)"])
+    values.append(row['readcounts'])
+    link_colors.append(group_colors[row['Group']])  # Green for non-pathogen side
+
+# 7. Phyla → Right Groups
+phylum_group_links = n_pat_df.groupby(['p', 'Group'])['readcounts'].sum().reset_index()
+for _, row in phylum_group_links.iterrows():
+    sources.append(node_indices[f"{row['p']} (NP)"])
+    targets.append(node_indices[f"{row['Group']} (Non-Pathogens)"])
+    values.append(row['readcounts'])
+    link_colors.append(group_colors[row['Group']])  # Green for non-pathogen side
+
+# 8. For nonpathogen-only functions: 
+for func in nonpathogen_only_funcs:
+
+    sources.append(node_indices[nonpathogen_only_not_present_groups])
+    targets.append(node_indices[nonpathogen_only_not_present_phyla])
+    values.append(row['readcounts'])
+    link_colors.append('rgba(150, 150, 150, 0.4)')
+    
+    # "not present in path phyla" → "not present in path species"
+    sources.append(node_indices[nonpathogen_only_not_present_phyla])
+    targets.append(node_indices[nonpathogen_only_not_present_species])
+    values.append(row['readcounts'])
+    link_colors.append('rgba(150, 150, 150, 0.4)')
+    
+    # "not present in path species" → function
+    sources.append(node_indices[nonpathogen_only_not_present_species])
+    targets.append(node_indices[func])
+    values.append(row['readcounts'])
+    link_colors.append('rgba(150, 150, 150, 0.4)')
+
+for i, source in enumerate(sources):
+    source_node = nodes[source]
+    target_node = nodes[targets[i]]
+    
+    # Determine color based on the side the link originates from
+    if source_node.endswith('(Pathogens)') or source_node.endswith('(P)') or source_node in all_pathogen_species:
+        # Left (pathogen) side - use red
+        link_colors.append('rgba(231, 76, 60, 0.6)')  # Red with transparency
+    elif target_node.endswith('(Non-Pathogens)') or target_node.endswith('(NP)') or target_node in all_nonpathogen_species:
+        # Right (non-pathogen) side - use green
+        link_colors.append('rgba(46, 204, 113, 0.6)')  # Green with transparency
+    else:
+        # Middle connections - use grey
+        link_colors.append('rgba(150, 150, 150, 0.4)')  # Grey with transparency
+        
+        
+# Diagram Layout
+
+
+link = dict(source=sources, target=targets, value=values, color=link_colors)
+node = dict(pad=15, thickness=20, line=dict(color="black", width=0.5), label=nodes)
+sankey = go.Sankey(link=link, node=node)
+
+
+# Create the Sankey diagram
+fig = go.Figure(go.Sankey(
+    arrangement="snap",
+    node=dict(
+        pad=30,
+        thickness=20,
+        line=dict(color="black", width=0.5),
+        label=nodes,
+        #color=node_colors,
+    ),
+    link=dict(
+        source=sources,
+        target=targets,
+        value=values,
+        color=link_colors
+    )
+))
+fig.update_layout(
+    font_size=12,
+    height=1000,
+    width=1800,
+    annotations=[
+        dict(
+            x=0.9,
+            y=1.1,
+            xref='paper',
+            yref='paper',
+            text=
+                 "<b>Link Colors:</b><br>"
+                 "<span style='color:rgba(255, 0, 0, 0.8)'>■ from PD</span><br>"
+                 "<span style='color:rgba(0, 158, 115, 0.8)'>■ from HC</span><br>",
+
+            showarrow=False,
+            align='left',
+            bordercolor='black',
+            borderwidth=1,
+            borderpad=4,
+            bgcolor='white'
+        )
+    ]
+)
+
+#fig.show()
+fig.write_html("images/sankey_diagram_with_HC.html")
+
+```
+Изобразим слева - патогенные виды, а справа - непатогенные. 
+
+```{r}
+#| echo: false
+#| error: FALSE
+library(htmltools)
+includeHTML("images/sankey_diagram_with_HC.html")
+```
