@@ -238,9 +238,6 @@ fig.update_layout(
              text="<b>Уровни анализа:</b> Группы пациентов → Род патогена → Вид патогена → Функции генов")  
     ]
 )
-
-#fig.show()
-
 fig.write_html("images/sankey_diagram.html")
 ```
 

@@ -50,7 +50,7 @@ samtools faidx VFDB-database/VFDB_setA_pro.fas
 Получили файл с расширением .fas.fai, в котором записаны
 
 | sseqid | ref_length | etc |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Name of this reference sequence | Total length of this reference sequence, in bases | byte_start, bases_line, bytes_line |
 
 ```{bash}
@@ -96,7 +96,7 @@ echo "Script finished."
 Результат работы BLASTp получили в [tabular format 6](https://www.metagenomics.wiki/tools/blast/blastn-output-format-6)
 
 | orf | sseqid | pident | length | etc. |
-|----|----|----|----|----|
+|---------------|---------------|---------------|---------------|---------------|
 | qseqid - query or source (gene) sequence id | subject or target (reference genome) sequence id | percentage of identical positions | alignment length (sequence overlap) | mismatch, gapopen, qstart, qend, sstart, send, evalue, bitscore |
 
 ```{bash}
@@ -211,7 +211,7 @@ echo "Script finished."
 1.  Формат вывода:
 
 | C/U | Contig | ID | etc. |
-|----|----|----|----|
+|------------------|------------------|------------------|------------------|
 | a one letter code indicating that the sequence was either classified or unclassified | The sequence ID, obtained from the FASTA/FASTQ header | The taxonomy ID Kraken 2 used to label the sequence; this is 0 if the sequence is unclassified | The length of the sequence in bp, a space-delimited list indicating the LCA mapping of each k-mer in the sequence(s) |
 
 ```{bash}
@@ -222,7 +222,7 @@ head -c 150 Kraken-results/Kraken_outputs/kraken_output_file_pd_4.txt
 2.  Формат обычного отчета:
 
 | Abundance | All reads | Cur reads | Level_code | ID | Name |
-|----|----|----|----|----|----|
+|------------|------------|------------|------------|------------|------------|
 | Percentage of reads covered by the clade rooted at this taxon | Number of reads covered by the clade rooted at this taxon | Number of reads assigned directly to this taxon | A rank code, indicating (U)nclassified, (D)omain, (K)ingdom, (P)hylum, (C)lass, (O)rder, (F)amily, (G)enus, or (S)pecies. All other ranks are simply '-' | NCBI taxonomy ID | Indented scientific name |
 
 ```{bash}
@@ -233,7 +233,7 @@ head -10 Kraken-results/Kraken_reports/kraken_report_file_pd_4.txt
 3.  Формат mpa-отчета:
 
 | full taxonomy of each taxon | All reads |
-|----|----|
+|------------------------------------|------------------------------------|
 | Each rank's name separated by a pipe character | Number of reads covered by the clade rooted at this taxon |
 
 ```{bash}
@@ -328,14 +328,15 @@ for file in Obtained-data/ORFs/NT/*_orf_nt_names.fasta; do
     #Индексируем BAM
     samtools index "aligned_read_${prefix}_${number}.bam"
 
-    #Удалим большой SAM, который нам не нужен
-    rm -r "$aligned_reads_directory/aligned_read_${prefix}_${number}.sam"
-    
     cd -
     
     # Подсчитываем ридкаунты и записываем результат в файл
     samtools idxstats "$aligned_reads_directory/aligned_read_${prefix}_${number}.bam" \
     > Readcounts/Readcount-result/Readcount_result_${prefix}_${number}.txt
+    
+    #Удалим большой SAM, который нам не нужен
+    rm -r "$aligned_reads_directory/aligned_read_${prefix}_${number}.sam"
+    
     
 done
 
@@ -344,7 +345,7 @@ done
 В результате вышел тектовый файл следующего формата:
 
 | orf | sequence length | readcounts | unmapped read-segments |
-|----|----|----|----|
+|------------------|------------------|------------------|------------------|
 | reference sequence name | sequence length | mapped read-segments | unmapped read-segments |
 
 ```{bash}
