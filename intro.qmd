@@ -216,7 +216,7 @@ echo "Script finished."
 
 ```{bash}
 #| echo: false
-head -c 150 Kraken-results/Kraken_outputs/kraken_output_file_pd_4.txt
+head -c 300 Kraken-results/Kraken_outputs/kraken_output_file_pd_4.txt
 ```
 
 2.  Формат обычного отчета:
@@ -328,14 +328,15 @@ for file in Obtained-data/ORFs/NT/*_orf_nt_names.fasta; do
     #Индексируем BAM
     samtools index "aligned_read_${prefix}_${number}.bam"
 
-    #Удалим большой SAM, который нам не нужен
-    rm -r "$aligned_reads_directory/aligned_read_${prefix}_${number}.sam"
-    
     cd -
     
     # Подсчитываем ридкаунты и записываем результат в файл
     samtools idxstats "$aligned_reads_directory/aligned_read_${prefix}_${number}.bam" \
     > Readcounts/Readcount-result/Readcount_result_${prefix}_${number}.txt
+    
+    #Удалим большой SAM, который нам не нужен
+    rm -r "$aligned_reads_directory/aligned_read_${prefix}_${number}.sam"
+    
     
 done
 

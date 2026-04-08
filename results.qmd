@@ -3,6 +3,7 @@
 ## Объединим результаты работы BLAST, KRAKEN2 и SAMtools inxstat
 
 Для этого будем использовать ID контигов и ОРС
+
 ```{python}
 import pandas as pd
 import os
@@ -22,7 +23,6 @@ def get_gene_name(x): #берем имя гена после $ в sseqid из VF
 
 
 ```
-
 
 ```{python}
 #| eval: false
@@ -77,13 +77,14 @@ result.to_csv('Signature-pairs/taxon-gene-example.csv',index = False)
 ```
 
 Полученная таблица имеет вид:
+
 ```{r}
 #| echo: False
 table <- read.csv("Signature-pairs/taxon-gene-full.csv")
 knitr::kable(table[1:10, ], align = "c")
 ```
 
-## Сделаем сводную таблицу с генами, которые принадлежат патогенным видам, согласно [списку патогенов CZ ID Pathogen List ](https://czid.org/pathogen_list)
+## Сделаем сводную таблицу с генами, которые принадлежат патогенным видам, согласно [списку патогенов CZ ID Pathogen List](https://czid.org/pathogen_list)
 
 ```{python}
 pwd_hc = pd.read_csv('Signature-pairs/taxon-gene-full.csv')
@@ -103,23 +104,438 @@ columns = df.columns
 df = df.sort_values(['p','s','Gene_info', 'pident']).reset_index(drop = True)
 
 aggregation_dict = {'pident': 'mean'}
-for col in list(columns[3:]):
+for col in list(columns[4:]):
     aggregation_dict[col] = 'sum' 
 
 df = df.groupby(['p','s','Gene_info']).agg(aggregation_dict).reset_index()
+df['Pair'] = df['p']+ '$' + df['s'] +'$'+ df['Gene_info'] +'$'+df['pident'].astype(str)
+df = df.drop(['p','s','Gene_info','pident'], axis = 1)
 
-df = df[['p','s','Gene_info','pident']+sorted(columns[4:], key=lambda x: (x.split('_')[0],int(x.split('_')[1])))]
+df = df[['Pair']+sorted(columns[4:], key=lambda x: (x.split('_')[0],int(x.split('_')[1])))]
+
+
+
+
 df.to_csv('Signature-pairs/taxon-gene-pivot.csv', index = False)
 
 ```
+
 Она имеет следующий вид, где гены по строчкам, а пациенты по столбцам:
+
 ```{r}
 #| echo: False
 table <- read.csv("Signature-pairs/taxon-gene-pivot.csv")
 knitr::kable(table[20:35, ], align = "c")
 ```
 
+
+
+Для визуализации распределения числа встречаемости сигнатурных пар в группах PD и HC был построен рисунок ниже. По оси x отложены пациенты группы HC, по оси y – пациенты группы PD. Серым цветом выделены гены в сигнатурных парах с низкой частотой встречаемости (\<=2 ненулевых значения в обеих группах). Эти гены были исключены из дальнейшего анализа, так как их включение могло бы сделать FDR-коррекцию излишне консервативной. На рисунке видно, что распределение данных характеризуется избытком нулей, что свидетельствует о ненормальности распределения.
+
+```{python}
+from collections import defaultdict
+
+def plot_zeroes_jitter(data, treshold = 5):
+    '''data has genes as index, patients in columns'''
+    data = data.T
+    data['status'] = data.index.map(lambda x: 0 if x[0] in ('h', 'H') else 1)
+    gene_names = [col for col in data.columns if col != 'status']
+    gene_data = {}  # Store data for each gene
+    coordinate_counts = defaultdict(int)
+
+    for gene in tqdm(gene_names, desc="Processing Genes"):
+        healthy = data[data['status'] == 0][gene]
+        sick = data[data['status'] == 1][gene]
+        healthy = pd.to_numeric(healthy, errors='coerce').dropna()  # Convert to numeric, handling errors
+        sick = pd.to_numeric(sick, errors='coerce').dropna()
+        non_zero_count = ((healthy != 0).sum(), (sick != 0).sum())
+
+        gene_data[gene] = {'healthy_zeros': non_zero_count[0],
+                               'sick_zeros': non_zero_count[1],
+                              }
+
+        coordinate_counts[non_zero_count] += 1
+        
+
+    fig, ax = plt.subplots(figsize=(6, 6))# Use seaborn's styling for better visuals
+    ax = plt.gca() # Access the current axes
+    # Add a subtle background color
+    fig.patch.set_facecolor('whitesmoke')  # Very light gray
+    plt.xlabel('Число ненулевых значений в образцах здоровых (HC)', fontsize=12)
+    plt.ylabel('ЧИсло ненулевых значений в образцах больных (PD)', fontsize=12)
+
+    # Shaded Regions with more distinct colors
+    plt.fill_between(np.linspace(-1, treshold, 100), -1, treshold, color='lightgrey', alpha=0.3,
+                     label=f'Гены с < {treshold} ненулевых значений в обеих группах')  # Red area
+
+    jitter_amount = 0.3
+    x_values = []  # Store x coordinates
+    y_values = []
+    for gene, data in tqdm(gene_data.items(), desc="Plotting Genes"):
+        x = data['healthy_zeros'] + np.random.uniform(-jitter_amount, jitter_amount)
+        y = data['sick_zeros'] + np.random.uniform(-jitter_amount, jitter_amount)
+        plt.scatter(x, y, s=30, c='dodgerblue', marker='o', alpha=0.7, edgecolors='navy', linewidths=0.5)
+        x_values.append(x)
+        y_values.append(y)
+    # Annotations with adjusted positioning
+    for coordinates, count in tqdm(coordinate_counts.items(), desc='Annotating Counts'):
+        healthy_zeros, sick_zeros = coordinates
+        plt.text(healthy_zeros, sick_zeros, str(count), ha='center', va='center', color='black', fontsize=8, zorder=3,
+                 bbox=dict(facecolor='white', alpha=0.5, edgecolor='none')) #Add background so that labels are easier to see.
+
+    plt.xlim(-1, max(x_values)+1)
+    plt.ylim(-1, max(y_values)+2)
+
+    # Refine Grid Lines
+    ax.grid(True, linestyle='--',alpha=0.5)
+    #ax.grid(False, which='minor')  # Remove minor gridlines for cleaner look
+
+    # Ticks with more distinct styling
+    plt.xticks(np.arange(0, max(x_values)+1, 1), fontsize=10)
+    plt.yticks(np.arange(0, max(y_values)+2, 1), fontsize=10)
+
+    # Legend Improvements
+    plt.legend(loc='upper left', frameon=True, framealpha = 0.8, edgecolor='black')  # Add frame for better visibility
+    plt.tight_layout()
+    plt.show()
+```
+
+```{python}
+#| label: fig-plot_zeroes_jitter
+norm_com = pd.read_csv('Signature-pairs/taxon-gene-pivot.csv', index_col = 0)
+plot_zeroes_jitter(norm_com,treshold = 3)
+```
+Поэтому обрежем эту область и запишем в новый датафрейм
+```{python}
+data = pd.read_csv('Signature-pairs/taxon-gene-pivot.csv', index_col = 0)
+
+hc_cols = [col for col in data.columns if col.startswith('HC')]
+pd_cols = [col for col in data.columns if  col.startswith('PD')]
+
+healthy_nonzero = (data[hc_cols] > 0).sum(axis=1)
+sick_nonzero = (data[pd_cols] > 0).sum(axis=1)
+
+mask = ( (sick_nonzero > 3) |  (healthy_nonzero > 3))
+data = data[mask]
+
+cols_to_drop = data.columns[(data == 0.0).all()].tolist()
+
+# Drop the identified columns
+df_cleaned = data.drop(columns=cols_to_drop)
+
+df_cleaned.to_csv('Signature-pairs/cut_taxon-gene-pivot.csv')
+
+```
+
+```{python}
+#| label: fig-plot_zeroes_jitter
+norm_com = pd.read_csv('Signature-pairs/cut_taxon-gene-pivot.csv', index_col = 0)
+plot_zeroes_jitter(norm_com,treshold = 3)
+```
+
+## TMM - нормализация ридкаунтов
+
+Перед проведением сравнительного анализа представленности генов патогенности была выполнена TMM (Trimmed Mean of M-values) - коррекция числа прочтений с использованием пакета edgeR. Необходимость данной коррекции обусловлена влиянием различных систематических ошибок на результаты анализа, в частности, различиями в глубине секвенирования образцов, не связанными с биологическими особенностями.
+
+```{r}
+#| eval: false
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("edgeR")
+```
+
+```{r}
+library(edgeR)
+```
+
+```{r}
+# Load the data
+
+filtered_genes <- read.csv('Signature-pairs/cut_taxon-gene-pivot.csv',  header = TRUE, row.names = 1)
+
+# Create the DGEList Object
+groups <- gsub("_.*", "", colnames(filtered_genes))
+
+
+q <- DGEList(counts=filtered_genes, group=factor(groups))
+
+# Calculate logCPM before normalization
+logCPM_before <- cpm(q, log=TRUE, prior.count = 1)
+
+# Perform TMM normalization
+q <- calcNormFactors(q)
+
+# Calculate logCPM after normalization
+logCPM_after <- cpm(q, log=TRUE, prior.count = 1)
+
+# --- Improved Boxplot Visualization ---
+
+# 1. Reshape the data for boxplotting using melt or pivot_longer
+
+library(reshape2)  # or use tidyr package for pivot_longer
+
+# Before normalization
+logCPM_before_melted <- melt(logCPM_before)  # Converts to long format
+colnames(logCPM_before_melted) <- c("Gene", "Sample", "LogCPM")  # Rename columns
+
+# After normalization
+logCPM_after_melted <- melt(logCPM_after)
+colnames(logCPM_after_melted) <- c("Gene", "Sample", "LogCPM")
+
+
+# 2. Create boxplots using ggplot2 for better aesthetics and control
+library(ggplot2)
+
+
+# Before Normalization Density Plot
+ggplot(logCPM_before_melted, aes(x = LogCPM, fill = Sample)) +
+  geom_density(alpha = 0.5) +  # Density plot with transparency
+  ggtitle("Log-CPM Density Before Normalization") +
+  xlab("Log-CPM") +
+  ylab("Density") +
+  theme_bw() +
+  theme(legend.position = "right") # Move legend for better readability
+
+
+# After Normalization Density Plot
+ggplot(logCPM_after_melted, aes(x = LogCPM, fill = Sample)) +
+  geom_density(alpha = 0.5) +  # Density plot with transparency
+  ggtitle("Log-CPM Density After Normalization") +
+  xlab("Log-CPM") +
+  ylab("Density") +
+  theme_bw() +
+  theme(legend.position = "right")
+
+# Save normalized counts
+normalized_counts <- cpm(q)
+write.csv(normalized_counts, file = 'Signature-pairs/norm_cut_taxon-gene-pivot.csv')
+```
+
+```{r}
+q$samples
+```
+
+Результаты TMM-коррекции представлены на рисунке ниже, где по оси X отложены образцы, а по оси Y показано распределение логарифма числа прочтений генов в сигнатурных парах, обнаруженных в образцах. Визуально видно, что после применения TMM-коррекции распределения числа прочтений становятся более сопоставимыми между образцами, что позволяет проводить корректный сравнительный анализ.
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import matplotlib.patches as mpatches
+
+def plot_jittered_log_readcount_distribution(df, y_jitter_scale=0.1, boxplot_width=0.4, title="Распределение числа прочтений по образцам (Violin Plot)"):
+
+    # Extract the sample names from the column names, excluding the first (Gene name)
+    sample_names = df.columns.tolist() # Corrected this line
+    df.index.name = 'Gene name and function'
+    df = df.reset_index()
+
+    # Melt the DataFrame to long format for easier plotting
+    df_melted = pd.melt(df, id_vars=['Gene name and function'], value_vars=sample_names, var_name='Sample', value_name='Readcounts')
+
+    # Apply a log transformation to the readcounts (using log1p to handle 0 values)
+    df_melted['LogReadcounts'] = np.log1p(df_melted['Readcounts'])
+    
+    n_pd = sum(1 for s in sample_names if s.startswith('PD_'))
+    n_hc = sum(1 for s in sample_names if s.startswith('HC_'))
+
+    # Define colors based on sample name and low count status
+    def get_color(sample):
+        if sample.startswith('PD_'):
+            return 'red'
+        elif sample.startswith('HC_'):
+            return 'green'
+        else:
+            return 'blue'  # Default color
+
+    sample_colors = [get_color(sample) for sample in df_melted['Sample']]
+    
+    
+
+    # --- Improved Plotting ---
+    plt.figure(figsize=(10, 5))  # Increased figure size for better readability
+    ax = sns.violinplot(x='Sample', y='LogReadcounts', data=df_melted, inner='quartile',  linewidth=0.8,  palette=[get_color(s) for s in df_melted['Sample'].unique()]) 
+
+    # Customize the plot
+    plt.title(title, fontweight='bold')  # Added fontweight for emphasis
+    plt.xlabel('Образец')
+    plt.ylabel('Log(Число прочтений + 1)')
+    plt.xticks(rotation=75, ha='right')  # Reduced rotation to 45 degrees
+    #plt.yticks(fontsize=14)
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    sns.despine(left=True)  # Keep only the bottom and right spines
+
+    # Add some space at the bottom for the x-axis labels
+    plt.subplots_adjust(bottom=0.2)
+    
+    
+    # --- Add Legend ---
+    legend_elements = [
+        mpatches.Patch(color='green', label=f'37% пациентов группы HC ({n_hc}/38)'),
+        mpatches.Patch(color='red', label=f'58% пациентов группы PD ({n_pd}/36)')
+        #mpatches.Patch(color='grey', label=f'Samples with < 5 non-zero readcounts, n={n_low_count} (out of 74)'),
+        
+    ]
+    plt.legend(handles=legend_elements, loc='upper right')
+    
+    
+
+    plt.tight_layout()
+    
+    plt.show()
+    
+
+```
+
+```{python}
+con = pd.read_csv('Signature-pairs/cut_taxon-gene-pivot.csv', index_col = 0)
+
+norm_com = pd.read_csv('Signature-pairs/norm_cut_taxon-gene-pivot.csv', index_col = 0)
+plot_jittered_log_readcount_distribution(con, title="Распределение числа прочтений по образцам до TMM")
+
+plot_jittered_log_readcount_distribution(norm_com, title="Распределение числа прочтений по образцам после TMM")
+```
+
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns  # For styling
+from matplotlib import ticker
+
+# Load the data, specifying tab separation and index column
+df = pd.read_csv('Signature-pairs/norm_cut_taxon-gene-pivot.csv', index_col = 0)
+# Calculate Mean and Variance for Each Gene
+df['mean'] = df.mean(axis=1)
+df['variance'] = df.var(axis=1)
+
+
+# Set a visually appealing style
+sns.set_style("whitegrid")  # "whitegrid", "darkgrid", "white", "dark", "ticks"
+
+# Define a visually appealing color palette
+# You can choose from: "deep", "muted", "pastel", "bright", "dark", "colorblind"
+sns.set_palette("bright")
+
+# Create the figure and axes
+fig, ax = plt.subplots(figsize=(8, 6))  # Adjusted figure size for better aesthetics
+
+# Scatter plot with improved aesthetics
+scatter = ax.scatter(df['mean'], df['variance'], s=20, c='dodgerblue', marker='o', alpha=0.7, edgecolors='navy', linewidths=0.5, label='Gene Expression Data') # Reduced point size
+
+# Fit a polynomial of degree 2
+coeffs = np.polyfit(df['mean'], df['variance'], 2)
+poly = np.poly1d(coeffs)
+
+# Generate x values for plotting the polynomial
+x = np.linspace(df['mean'].min(), df['mean'].max(), 200)  # Increased points for smoother curve
+y = poly(x)
+
+# Plot the fitted polynomial with a different color and linewidth
+ax.plot(x, y, color='darkred', linewidth=2, label=r'Fitted Polynomial: $y = {:.1f}x^2  {:.2} \cdot 10^4 x + {:.2} \cdot 10^9 $'.format(coeffs[0], coeffs[1]/10000, coeffs[2]/10**9))  # Increased linewidth and scientific notation
+
+# Improved labels and title
+ax.set_xlabel('Mean Gene Expression Level (Normalized)', fontsize=12)
+ax.set_ylabel('Variance of Expression (Normalized)', fontsize=12)
+ax.set_title('Variance vs. Mean Expression for Genes (TMM Normalized Data)', fontsize=14, fontweight='bold')
+
+# Customize grid lines
+ax.grid(True, linestyle='--', alpha=0.5)
+
+# Add a subtle background color
+fig.patch.set_facecolor('whitesmoke')  # Very light gray
+
+# Add a legend with a better placement and frame
+ax.legend(loc='upper left', frameon=True, framealpha=0.8, edgecolor='black')
+
+# Adjust the tick label size
+ax.tick_params(axis='both', which='major', labelsize=10)
+
+# Format axis ticks to use scientific notation when appropriate
+formatter = ticker.ScalarFormatter(useMathText=True)
+formatter.set_scientific(True)
+formatter.set_powerlimits((-1,1))
+ax.xaxis.set_major_formatter(formatter)
+ax.yaxis.set_major_formatter(formatter)
+
+# Remove top and right spines (optional)
+ax.spines['top'].set_visible(True)
+ax.spines['right'].set_visible(True)
+
+# Tight layout to prevent labels from overlapping
+plt.tight_layout()
+
+# Show the plot
+plt.show()
+```
+
+
+Следует отметить, что полученные ридкаунты отражают потенциальную кодирующую способность участков генома, но не свидетельствуют о фактической экспрессии генов патогенности. В данном контексте более важным является наличие или отсутствие этих генов в патогенных микроорганизмах. При отсутствии гена, учитывая фрагментированность метагеномных данных, можно предположить, что патоген не экспрессирует данный ген. Поэтому первым шагом был проведен анализ различий в частоте встречаемости генов патогенности между группами.
+
+##	Точный тест Фишера  
+
+Для всех сигнатурных пар вне серой зоны на рисунке выше был применен точный тест Фишера с использованием функции fisher_exact библиотеки scipy.stats в Python. Этот тест предназначен для проверки гипотезы о независимости двух групп по двум переменным (в данном случае, по числу нулевых и ненулевых значений), с использованием гипергеометрического распределения для значений в ячейках таблицы 2x2. Тест Фишера, как и хи-квадрат, является непараметрическим и особенно полезен для анализа малых или разреженных данных, где применение хи-квадрат может быть неточным.
+
+```{python}
+import pandas as pd
+import numpy as np
+from scipy.stats import chi2_contingency, fisher_exact
+from statsmodels.stats.multitest import multipletests
+
+data = pd.read_csv('Signature-pairs/norm_cut_taxon-gene-pivot.csv', index_col = 0)
+
+
+# Count non-zero and zero values
+def count_values(row, cols):
+    non_zero = (row[cols] != 0).sum()
+    zero = len(cols) - non_zero
+    return non_zero, zero
+
+results = []
+for gene, row in data.iterrows():
+    hc_non_zero, hc_zero = count_values(row, hc_cols)
+    pd_non_zero, pd_zero = count_values(row, pd_cols)
+    table = [[hc_non_zero, pd_non_zero], [hc_zero, pd_zero]]
+    
+    # Choose test
+    try:
+        _, p_chi2, _, expected = chi2_contingency(table)
+        if expected.min() < 5:
+            type = 'Fisher'
+            _, p_value = fisher_exact(table)
+        else:
+            type = 'Chi'
+            p_value = p_chi2
+    except:
+        p_value = np.nan
+    
+    results.append({
+        'Gene': gene,
+        'HCnon_zero': hc_non_zero,
+        'PDnon_zero': pd_non_zero,
+        'p_value': p_value,
+        'test': type
+    })
+
+# Convert to DataFrame and adjust p-values
+results_df = pd.DataFrame(results)
+results_df['p_adj'] = multipletests(results_df['p_value'], method='fdr_bh')[1]
+
+# Save significant genes
+sig_genes = results_df[results_df['p_adj'] < 0.1]
+
+sig_genes
+
+```
+
+
+Сигнатурные пары, для которых FDR < 0.1, выделены красным цветом на рисунке 14. Их общее количество составило 59.
+
 ## Изобразим полученные результаты на Sankey-диаграммах
+
 ```{python}
 import pandas as pd
 import plotly.graph_objects as go
@@ -151,7 +567,7 @@ def get_function_group_colors(df, level_col):
         return level_colors
 
 
-pwd_hc = pd.read_csv('Signature-pairs/taxon-gene-full.csv')[['Gene class', 'Gene', 'p','s', 's1','Gene function', 'Patient', 'readcounts']]
+pwd_hc = pd.read_csv('Signature-pairs/taxon-gene-full.csv')[['Gene class', 'Gene', 'p','s','Gene function', 'Patient', 'readcounts']]
 IDs = pd.read_csv('Obtained-data/Pathogen-data/CZ_ID_pathogen_list_2024.tsv', sep='\t').iloc[:252]
 IDs['taxon_name'] = IDs['taxon_name'].str.replace(' ', '_')
 pathogen_df = pwd_hc.copy()
@@ -238,13 +654,11 @@ fig.update_layout(
              text="<b>Уровни анализа:</b> Группы пациентов → Род патогена → Вид патогена → Функции генов")  
     ]
 )
-
-#fig.show()
-
 fig.write_html("images/sankey_diagram.html")
 ```
 
 Изобразим только патогенные виды:
+
 ```{r}
 #| echo: false
 #| error: FALSE
@@ -527,7 +941,8 @@ fig.update_layout(
 fig.write_html("images/sankey_diagram_with_HC.html")
 
 ```
-Изобразим слева - патогенные виды, а справа - непатогенные. 
+
+Изобразим слева - патогенные виды, а справа - непатогенные.
 
 ```{r}
 #| echo: false
