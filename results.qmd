@@ -120,20 +120,14 @@ df.to_csv('Signature-pairs/taxon-gene-pivot.csv', index = False)
 
 ```
 
-Она имеет следующий вид, где гены по строчкам, а пациенты по столбцам:
-
-```{r}
-#| echo: False
-table <- read.csv("Signature-pairs/taxon-gene-pivot.csv")
-knitr::kable(table[20:35, ], align = "c")
-```
-
-
+В ней гены по строчкам, а пациенты по столбцам
 
 Для визуализации распределения числа встречаемости сигнатурных пар в группах PD и HC был построен рисунок ниже. По оси x отложены пациенты группы HC, по оси y – пациенты группы PD. Серым цветом выделены гены в сигнатурных парах с низкой частотой встречаемости (\<=2 ненулевых значения в обеих группах). Эти гены были исключены из дальнейшего анализа, так как их включение могло бы сделать FDR-коррекцию излишне консервативной. На рисунке видно, что распределение данных характеризуется избытком нулей, что свидетельствует о ненормальности распределения.
 
 ```{python}
 from collections import defaultdict
+import matplotlib.pyplot as plt
+import numpy as np
 
 def plot_zeroes_jitter(data, treshold = 5):
     '''data has genes as index, patients in columns'''
@@ -205,7 +199,9 @@ def plot_zeroes_jitter(data, treshold = 5):
 norm_com = pd.read_csv('Signature-pairs/taxon-gene-pivot.csv', index_col = 0)
 plot_zeroes_jitter(norm_com,treshold = 3)
 ```
+
 Поэтому обрежем эту область и запишем в новый датафрейм
+
 ```{python}
 data = pd.read_csv('Signature-pairs/taxon-gene-pivot.csv', index_col = 0)
 
@@ -228,7 +224,6 @@ df_cleaned.to_csv('Signature-pairs/cut_taxon-gene-pivot.csv')
 ```
 
 ```{python}
-#| label: fig-plot_zeroes_jitter
 norm_com = pd.read_csv('Signature-pairs/cut_taxon-gene-pivot.csv', index_col = 0)
 plot_zeroes_jitter(norm_com,treshold = 3)
 ```
@@ -398,7 +393,6 @@ plot_jittered_log_readcount_distribution(con, title="Распределение 
 plot_jittered_log_readcount_distribution(norm_com, title="Распределение числа прочтений по образцам после TMM")
 ```
 
-
 ```{python}
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -472,10 +466,9 @@ plt.tight_layout()
 plt.show()
 ```
 
-
 Следует отметить, что полученные ридкаунты отражают потенциальную кодирующую способность участков генома, но не свидетельствуют о фактической экспрессии генов патогенности. В данном контексте более важным является наличие или отсутствие этих генов в патогенных микроорганизмах. При отсутствии гена, учитывая фрагментированность метагеномных данных, можно предположить, что патоген не экспрессирует данный ген. Поэтому первым шагом был проведен анализ различий в частоте встречаемости генов патогенности между группами.
 
-##	Точный тест Фишера  
+## Точный тест Фишера
 
 Для всех сигнатурных пар вне серой зоны на рисунке выше был применен точный тест Фишера с использованием функции fisher_exact библиотеки scipy.stats в Python. Этот тест предназначен для проверки гипотезы о независимости двух групп по двум переменным (в данном случае, по числу нулевых и ненулевых значений), с использованием гипергеометрического распределения для значений в ячейках таблицы 2x2. Тест Фишера, как и хи-квадрат, является непараметрическим и особенно полезен для анализа малых или разреженных данных, где применение хи-квадрат может быть неточным.
 
@@ -487,6 +480,8 @@ from statsmodels.stats.multitest import multipletests
 
 data = pd.read_csv('Signature-pairs/norm_cut_taxon-gene-pivot.csv', index_col = 0)
 
+hc_cols = [col for col in data.columns if col.startswith('HC')]
+pd_cols = [col for col in data.columns if  col.startswith('PD')]
 
 # Count non-zero and zero values
 def count_values(row, cols):
@@ -531,8 +526,7 @@ sig_genes
 
 ```
 
-
-Сигнатурные пары, для которых FDR < 0.1, выделены красным цветом на рисунке 14. Их общее количество составило 59.
+Сигнатурные пары, для которых FDR \< 0.1, выделены красным цветом на рисунке 14. Их общее количество составило 59.
 
 ## Изобразим полученные результаты на Sankey-диаграммах
 
