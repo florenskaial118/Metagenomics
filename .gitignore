@@ -9,3 +9,6 @@ Software/
 .Rhistory
 .Rproj.user/
 !/.gitignore
+!.dockerignore
+
+**/*.quarto_ipynb
