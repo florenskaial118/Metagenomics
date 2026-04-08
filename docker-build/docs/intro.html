@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Функциональный анализ метагеномов – Сравнение генов патогенности (вирулентности) в метагеномах изолятов кишечной микробиоты у здоровых людей и больных клинической депрессией (бакалаврская работа)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./results.html" rel="next">
+<link href="./index.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-27c261d06b905028a18691de25d09dde.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intro.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Функциональный анализ метагеномов</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Сравнение генов патогенности (вирулентности) в метагеномах изолятов кишечной микробиоты у здоровых людей и больных клинической депрессией (бакалаврская работа)</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Дизайн исследования</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Функциональный анализ метагеномов</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Создадим матрицу сигнатурных пар <strong>патоген-ген</strong></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#поиск-генов-патогенности" id="toc-поиск-генов-патогенности" class="nav-link active" data-scroll-target="#поиск-генов-патогенности"><span class="header-section-number">2.1</span> Поиск генов патогенности</a>
+  <ul class="collapse">
+  <li><a href="#скачать-blast-с-официального-сайта" id="toc-скачать-blast-с-официального-сайта" class="nav-link" data-scroll-target="#скачать-blast-с-официального-сайта"><span class="header-section-number">2.1.1</span> Скачать BLAST с официального сайта</a></li>
+  <li><a href="#создать-blast-базу-данных-из-скаченного-фаста-файла-c-аминокислотными-последовательностями" id="toc-создать-blast-базу-данных-из-скаченного-фаста-файла-c-аминокислотными-последовательностями" class="nav-link" data-scroll-target="#создать-blast-базу-данных-из-скаченного-фаста-файла-c-аминокислотными-последовательностями"><span class="header-section-number">2.1.2</span> Создать BLAST базу данных из скаченного фаста-файла c аминокислотными последовательностями</a></li>
+  <li><a href="#выравнивание-готовых-орс-на-базу-данных-с-использованием-blastp-версия-ncbi-blast-2.16.0." id="toc-выравнивание-готовых-орс-на-базу-данных-с-использованием-blastp-версия-ncbi-blast-2.16.0." class="nav-link" data-scroll-target="#выравнивание-готовых-орс-на-базу-данных-с-использованием-blastp-версия-ncbi-blast-2.16.0."><span class="header-section-number">2.1.3</span> Выравнивание готовых ОРС на базу данных с использованием BLASTp (версия <em>ncbi-blast-2.16.0+</em>).</a></li>
+  <li><a href="#сортировка-результатов-выравнивания" id="toc-сортировка-результатов-выравнивания" class="nav-link" data-scroll-target="#сортировка-результатов-выравнивания"><span class="header-section-number">2.1.4</span> Сортировка результатов выравнивания</a></li>
+  <li><a href="#таксономическая-аннтотация-контигов" id="toc-таксономическая-аннтотация-контигов" class="nav-link" data-scroll-target="#таксономическая-аннтотация-контигов"><span class="header-section-number">2.1.5</span> Таксономическая аннтотация контигов</a></li>
+  <li><a href="#подсчет-встречаемости-орс-нуклеотидные-последовательности" id="toc-подсчет-встречаемости-орс-нуклеотидные-последовательности" class="nav-link" data-scroll-target="#подсчет-встречаемости-орс-нуклеотидные-последовательности"><span class="header-section-number">2.1.6</span> Подсчет встречаемости ОРС (нуклеотидные последовательности)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Функциональный анализ метагеномов</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="поиск-генов-патогенности" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="поиск-генов-патогенности"><span class="header-section-number">2.1</span> Поиск генов патогенности</h2>
+<p>Здесь будети идти обработка следующих данных из работы <span class="citation" data-cites="kovtun2022">(<a href="references.html#ref-kovtun2022" role="doc-biblioref">Kovtun et al. 2022</a>)</span>:</p>
+<p>1. Обрезанные риды (на этапе подсчета ридкаунтов)</p>
+<p>2. Сборки (для таксономической классификации)</p>
+<p>3. ОРС (АА и НТ) в сборках (АА для выравнивания против базы данных генов патогенности, НТ для подсчета ридкаунтов)</p>
+<section id="скачать-blast-с-официального-сайта" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="скачать-blast-с-официального-сайта"><span class="header-section-number">2.1.1</span> Скачать BLAST с <a href="https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+">официального сайта</a></h3>
+<p>Для более быстрого выполнения покажем пример поиска генов против небольшой базы данных генов патогенности <a href="https://www.mgc.ac.cn/VFs/main.htm">VFDB</a>: Protein Sequences of core dataset (VFDB_setA_pro.fas), однако в дипломной работе использовалась полная версия: Protein Sequences of full dataset (VFDB_setB_pro.fas) со <a href="https://www.mgc.ac.cn/VFs/download.htm">страницы скачивания</a></p>
+</section>
+<section id="создать-blast-базу-данных-из-скаченного-фаста-файла-c-аминокислотными-последовательностями" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="создать-blast-базу-данных-из-скаченного-фаста-файла-c-аминокислотными-последовательностями"><span class="header-section-number">2.1.2</span> Создать BLAST базу данных из скаченного фаста-файла c аминокислотными последовательностями</h3>
+<p>Пример строки из фаста-файла базы данных:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>&gt;VFG037176(gb|WP_001081735) (plc1) phospholipase C [Phospholipase C (VF0470) - Exotoxin (VFC0235)] [Acinetobacter baumannii ACICU]
+MNRREFLLNSTKTMFGTAALASFPLSIQKALAIDAKVESGTIQDVKHIVILTQENRSFDN
+YFGTLKGVRGFGDRFTIPMTEGRKVWEQYDANKKKVLPYHLDSHLGNAQRVTGTNHSWSD
+GQGAWDNGRMSDWVTHKQPQSMGYYKKQEVEYQFALANAFTICDAYHCAMHAGTNPNRKF
+IWTGTNGPTGAGVASVVNEFDGIGPSTEGYEWTTYPERLQQAGVTWKVYQNMPDNFTDNP</code></pre>
+</div>
+</div>
+<p>Создаем базу данных:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Software/ncbi-blast-2.16.0+/bin/makeblastdb</span> <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">-in</span> VFDB-database/VFDB_setA_pro.fas <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-dbtype</span> <span class="st">'prot'</span> <span class="dt">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">-out</span> VFDB-database/VFDB_setA_pro/VFDB_setA_pro</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Building a new DB, current time: 04/08/2026 13:55:44
+New DB name:   /Users/lidaflorenskaya/Documents/АлгБио/Metagenomics/VFDB-database/VFDB_setA_pro/VFDB_setA_pro
+New DB title:  VFDB-database/VFDB_setA_pro.fas
+Sequence type: Protein
+Deleted existing Protein BLAST database named /Users/lidaflorenskaya/Documents/АлгБио/Metagenomics/VFDB-database/VFDB_setA_pro/VFDB_setA_pro
+Keep MBits: T
+Maximum file size: 3000000000B
+Adding sequences from FASTA; added 4363 sequences in 0.418578 seconds.</code></pre>
+</div>
+</div>
+<p>Используем samtools faidx, чтобы получить длины последовательностей (референсов) в базе данных:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#source /Users/lidaflorenskaya/miniconda3/bin/activate py3_study</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#conda install bioconda::samtools</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> faidx VFDB-database/VFDB_setA_pro.fas</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Получили файл с расширением .fas.fai, в котором записаны</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>sseqid</th>
+<th>ref_length</th>
+<th>etc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Name of this reference sequence</td>
+<td>Total length of this reference sequence, in bases</td>
+<td>byte_start, bases_line, bytes_line</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>VFG037176(gb|WP_001081735)  722 131 60  61
+VFG037177(gb|WP_000632986)  742 997 60  61
+VFG037203(gb|WP_000079188)  541 1936    60  61
+VFG037218(gb|WP_000983821)  389 2660    60  61
+VFG037232(gb|WP_001093095)  251 3274    60  61</code></pre>
+</div>
+</div>
+<p>Для настройки питона в RStudio использовались советы со <a href="https://stackoverflow.com/questions/56153765/how-to-change-the-default-python-version-path-in-rstudio">страницы</a></p>
+</section>
+<section id="выравнивание-готовых-орс-на-базу-данных-с-использованием-blastp-версия-ncbi-blast-2.16.0." class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="выравнивание-готовых-орс-на-базу-данных-с-использованием-blastp-версия-ncbi-blast-2.16.0."><span class="header-section-number">2.1.3</span> Выравнивание готовых ОРС на базу данных с использованием BLASTp (версия <em>ncbi-blast-2.16.0+</em>).</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> Obtained-data/ORFs/AA/<span class="pp">*</span>_orf_aa_names.fasta<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">filename</span><span class="op">=</span><span class="st">"</span><span class="va">${file</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span><span class="st">"</span>  <span class="co">#получаем имя файла из его пути</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Используем регулярное выражение, чтобы достать из названия файла информацию о пациенте</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">[[</span> <span class="st">"</span><span class="va">$filename</span><span class="st">"</span> <span class="ot">=~</span> <span class="op">([</span><span class="ss">A</span><span class="op">-</span><span class="ss">Za</span><span class="op">-</span><span class="ss">z</span><span class="op">]</span><span class="pp">+</span><span class="op">)</span><span class="ss">_</span><span class="op">([</span><span class="ss">0</span><span class="op">-</span><span class="ss">9</span><span class="op">]</span><span class="pp">+</span><span class="op">)</span><span class="ss">_orf_aa_names</span><span class="dt">\.</span><span class="ss">fasta</span> <span class="kw">]]</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">prefix</span><span class="op">=</span><span class="st">"</span><span class="va">${BASH_REMATCH</span><span class="op">[</span><span class="dv">1</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="va">number</span><span class="op">=</span><span class="st">"</span><span class="va">${BASH_REMATCH</span><span class="op">[</span><span class="dv">2</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Формируем файл, куда запишем результат</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="va">output_file</span><span class="op">=</span><span class="st">"Blast-results/Blast-results-raw/raw_blast_file_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.csv"</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Processing: </span><span class="va">$file</span><span class="st">"</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Software/ncbi-blast-2.16.0+/bin/blastp</span> <span class="dt">\</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">-query</span> <span class="st">"</span><span class="va">$file</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">-db</span> VFDB-database/VFDB_setA_pro/VFDB_setA_pro <span class="dt">\</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">-out</span> <span class="st">"</span><span class="va">$output_file</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">-outfmt</span> 6 <span class="dt">\</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">-num_threads</span> 4 </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Script finished."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Выполяем эту долгую ячейку с помощью процесса на заднем фоне: <code>sh Scripts/BLAST.sh &amp;</code></p>
+<p>Результат работы BLASTp получили в <a href="https://www.metagenomics.wiki/tools/blast/blastn-output-format-6">tabular format 6</a></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>orf</th>
+<th>sseqid</th>
+<th>pident</th>
+<th>length</th>
+<th>etc.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>qseqid - query or source (gene) sequence id</td>
+<td>subject or target (reference genome) sequence id</td>
+<td>percentage of identical positions</td>
+<td>alignment length (sequence overlap)</td>
+<td>mismatch, gapopen, qstart, qend, sstart, send, evalue, bitscore</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>orf sseqid  pident  length  mismatch    gapopen qstart  qend    sstart  send    evalue  bitscore    ref_length
+NODE_2313_length_11591_cov_3.007730$gene_id=76755   VFG049144(gb|WP_002892069)_(acrB)_acriflavine_resistance_protein_B_[AcrAB_(VF0568)_-_Antimicrobial_activity/Competitive_advantage_(VFC0325)]_[Klebsiella_pneumoniae_subsp._pneumoniae_NTUH-K2044]$acrB  91.516  1049    88  1   1   1049    1   1048    0.0 1941.0  1048
+NODE_3128_length_8692_cov_3.665467$gene_id=84788    VFG001444(gb|AAG10151)_(aslA)_putative_arylsulfatase_[AslA_(VF0238)_-_Invasion_(VFC0083)]_[Escherichia_coli_O18:K1:H7_str._RS218]$aslA  96.976  463 14  0   1   463 1   463 0.0 933.0   475
+NODE_3698_length_7353_cov_3.325591$gene_id=89288    VFG013037(gb|WP_000640969)_(fepG)_iron-enterobactin_ABC_transporter_permease_[Enterobactin_synthesis_and_transport_(VF0984)_-_Nutritional/Metabolic_factor_(VFC0272)]_[Shigella_boydii_Sb227]$fepG  99.394  330 2   0   1   330 1   330 0.0 633.0   330
+NODE_3698_length_7353_cov_3.325591$gene_id=89289    VFG013028(gb|NP_706446)_(fepD)_iron-enterobactin_ABC_transporter_permease_[Enterobactin_synthesis_and_transport_(VF0984)_-_Nutritional/Metabolic_factor_(VFC0272)]_[Shigella_flexneri_2a_str._301]$fepD 99.408  338 2   0   1   338 1   338 0.0 638.0   338</code></pre>
+</div>
+</div>
+<p>BLAST нашел несколько совпадений для каждой ОРС с базой данных. Первый вариант в результатах для каждой ОРС - это самое лучшее совпадение.</p>
+</section>
+<section id="сортировка-результатов-выравнивания" class="level3" data-number="2.1.4">
+<h3 data-number="2.1.4" class="anchored" data-anchor-id="сортировка-результатов-выравнивания"><span class="header-section-number">2.1.4</span> Сортировка результатов выравнивания</h3>
+<p>В данной работе, для обеспечения высокой достоверности идентификации, был установлен строгий порог гомологии (<em>‘pident’</em> ) на уровне 90%, а допустимая разница в длине последовательностей не превышала 5%.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tqdm <span class="im">import</span> tqdm</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#считываем файл с информацией про нашу базу данных</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>database <span class="op">=</span> pd.read_csv(<span class="st">'Obtained-data/VFDB-database/modified_VFDB_setB_full_pro.fas.fai'</span>, sep<span class="op">=</span><span class="st">'</span><span class="ch">\t</span><span class="st">'</span>, header<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                    names<span class="op">=</span>[<span class="st">'sseqid'</span>, <span class="st">'ref_length'</span>, <span class="st">'byte_start'</span>, <span class="st">'bases_line'</span>, <span class="st">'bytes_line'</span>])[[<span class="st">'sseqid'</span>, <span class="st">'ref_length'</span>]]</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>pattern <span class="op">=</span> <span class="vs">r"</span><span class="dv">.</span><span class="op">*</span><span class="ch">\.</span><span class="vs">csv</span><span class="dv">$</span><span class="vs">"</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>regex <span class="op">=</span> re.<span class="bu">compile</span>(pattern)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>directory <span class="op">=</span> <span class="st">'Obtained-data/Blast-results-raw'</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#обрабатываем все сырые результаты бласта, они лежат в одной папке и имеют формат .csv</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> filename <span class="kw">in</span> tqdm(os.listdir(<span class="st">"Obtained-data/Blast-results-raw"</span>), desc <span class="op">=</span> <span class="st">'tqdm() Progress Bar'</span>):</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">0.5</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> regex.match(filename):</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>      <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>filename<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>      filepath <span class="op">=</span> os.path.join(directory, filename)  </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>      <span class="co">#достаем из названия файла инфу о пациенте</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>      patient <span class="op">=</span> filename.split(<span class="st">'file_'</span>)[<span class="dv">1</span>].split(<span class="st">'.'</span>)[<span class="dv">0</span>]</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>      time.sleep(<span class="fl">0.5</span>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>      bl <span class="op">=</span> pd.read_csv(filepath, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, header<span class="op">=</span><span class="va">None</span>, </span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>                       names<span class="op">=</span>[<span class="st">'orf'</span>, <span class="st">'sseqid'</span> ,<span class="st">'pident'</span>, <span class="st">'length'</span>, <span class="st">'mismatch'</span>, <span class="st">'gapopen'</span>, <span class="st">'qstart'</span> ,<span class="st">'qend'</span>, <span class="st">'sstart'</span> ,<span class="st">'send'</span>, <span class="st">'evalue'</span>, <span class="st">'bitscore'</span>]) </span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>      <span class="co">#оставляем только лучшее совпадение</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>      bl <span class="op">=</span> bl.drop_duplicates(subset<span class="op">=</span>[<span class="st">'orf'</span>], keep<span class="op">=</span><span class="st">'first'</span>) </span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>      <span class="co">#ставим пороговый процент гомологии в 90%</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>      bl <span class="op">=</span> bl[bl[<span class="st">'pident'</span>] <span class="op">&gt;=</span> <span class="dv">90</span>]</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>      <span class="co">#объединяем с инфой о референсных последовательностях</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>      merged <span class="op">=</span> bl.merge(database, on<span class="op">=</span><span class="st">'sseqid'</span>, how<span class="op">=</span><span class="st">'inner'</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>      <span class="co">#print(merged.to_markdown())</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>      <span class="co">#выбираем те выравнивания, где длины найденной и референсной последовательности отличаются не более, чем на 5%</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>      merged_sorted <span class="op">=</span> merged.loc[(merged[<span class="st">'ref_length'</span>] <span class="op">/</span> merged[<span class="st">'length'</span>] <span class="op">&gt;=</span> <span class="fl">0.95</span>) <span class="op">&amp;</span> (merged[<span class="st">'ref_length'</span>] <span class="op">/</span> merged[<span class="st">'length'</span>] <span class="op">&lt;</span> <span class="fl">1.05</span>)]</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>      merged_sorted.to_csv(<span class="ss">f'Blast-results/Blast-results-filtered/filtered_blast_file_</span><span class="sc">{</span>patient<span class="sc">}</span><span class="ss">.csv'</span>, index<span class="op">=</span><span class="va">False</span>, sep<span class="op">=</span><span class="st">'</span><span class="ch">\t</span><span class="st">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="таксономическая-аннтотация-контигов" class="level3" data-number="2.1.5">
+<h3 data-number="2.1.5" class="anchored" data-anchor-id="таксономическая-аннтотация-контигов"><span class="header-section-number">2.1.5</span> Таксономическая аннтотация контигов</h3>
+<p>Скачаем <a href="https://github.com/DerrickWood/kraken2.git%20Software/kraken">Kraken2</a> и выполним установку:</p>
+<p><code>git clone https://github.com/DerrickWood/kraken2.git Software/kraken2</code></p>
+<p><code>mkdir Software/kraken2/KRAKEN2</code></p>
+<p><code>bash Software/kraken2/install_kraken2.sh KRAKEN2</code></p>
+<p>Мы делаем аннотацию контигов, поэтому нам важно сохранить информацию об ID контига, чтобы потом сопоставить с генами, которые были в нем найдены. Для этого запустим Кракен2 со стандартным репортом и затем также сделаем mpa-style репорт, чтобы достать полную информацию о таксономичесокй принадлежности. Для этого скачаем <a href="https://github.com/jenniferlu717/KrakenTools.git%20Software/KrakenTools">KrakenTools</a>:</p>
+<p><code>git clone https://github.com/jenniferlu717/KrakenTools.git Software/KrakenTools</code></p>
+<p>Код запуска:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="va">KRAKEN_DIR</span><span class="op">=</span><span class="st">"/home/lidaf/Metagenomics/Kraken-results"</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> Obtained-data/assemblies/<span class="pp">*</span>.fasta<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">filename</span><span class="op">=</span><span class="st">"</span><span class="va">${file</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span><span class="st">"</span>  <span class="co"># Get the filename without the path</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use a regex to extract the components</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">[[</span> <span class="st">"</span><span class="va">$filename</span><span class="st">"</span> <span class="ot">=~</span> <span class="op">([</span><span class="ss">A</span><span class="op">-</span><span class="ss">Za</span><span class="op">-</span><span class="ss">z</span><span class="op">]</span><span class="pp">+</span><span class="op">)</span><span class="ss">_</span><span class="op">([</span><span class="ss">0</span><span class="op">-</span><span class="ss">9</span><span class="op">]</span><span class="pp">+</span><span class="op">)</span><span class="dt">\.</span><span class="ss">fasta</span> <span class="kw">]]</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">prefix</span><span class="op">=</span><span class="st">"</span><span class="va">${BASH_REMATCH</span><span class="op">[</span><span class="dv">1</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="va">number</span><span class="op">=</span><span class="st">"</span><span class="va">${BASH_REMATCH</span><span class="op">[</span><span class="dv">2</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="va">kraken_output_file</span><span class="op">=</span><span class="st">"Kraken-results/Kraken_outputs/kraken_output_file_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.txt"</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="va">kraken_report_file</span><span class="op">=</span><span class="st">"Kraken-results/Kraken_reports/kraken_report_file_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.txt"</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="va">kraken_mpa_report_file</span><span class="op">=</span><span class="st">"Kraken-results/Kraken_mpa_reports/kraken_mpa_report_file_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.txt"</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Processing: </span><span class="va">$file</span><span class="st">"</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Software/kraken2/KRAKEN2/kraken2</span> <span class="dt">\</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">--db</span> /home/kovtunas/kraken2_pluspf <span class="dt">\</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">--threads</span> 20 <span class="dt">\</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">--confidence</span> 0.01 <span class="dt">\</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">--output</span> <span class="st">"</span><span class="va">$kraken_output_file</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">--report</span> <span class="st">"</span><span class="va">$kraken_report_file</span><span class="st">"</span>  <span class="dt">\</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"</span><span class="va">$file</span><span class="st">"</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    <span class="ex">python</span> <span class="st">'Software/KrakenTools/kreport2mpa.py'</span> <span class="at">-r</span> <span class="st">"</span><span class="va">$kraken_report_file</span><span class="st">"</span> <span class="at">-o</span> <span class="st">"</span><span class="va">$kraken_mpa_report_file</span><span class="st">"</span> <span class="at">--intermediate-ranks</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Script finished."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>bash Scripts/KRAKEN-assemblies.sh &amp;</code></p>
+<p>В согласии с <a href="https://github.com/DerrickWood/kraken2/wiki/Manual">мануалом</a>, полученные текстовые файлы имеют следующие форматы:</p>
+<ol type="1">
+<li>Формат вывода:</li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>C/U</th>
+<th>Contig</th>
+<th>ID</th>
+<th>etc.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>a one letter code indicating that the sequence was either classified or unclassified</td>
+<td>The sequence ID, obtained from the FASTA/FASTQ header</td>
+<td>The taxonomy ID Kraken 2 used to label the sequence; this is 0 if the sequence is unclassified</td>
+<td>The length of the sequence in bp, a space-delimited list indicating the LCA mapping of each k-mer in the sequence(s)</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>C   NODE_1_length_816938_cov_20.158043  2585117 816938  2:3 328813:102 0:31 2585117:7 0:35 328813:84 239759:1 328813:376 239759:2 328813:86 2585117:4 328813:2 2585117:1 328813:1 2585117:5 328813:2 2585117:2 328813:81 0:7 328813:1 0:1 328813:5 0:14 328813:4 0:7 2585117:2 328813:95 2:1 328813:62 239759:14</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li>Формат обычного отчета:</li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Abundance</th>
+<th>All reads</th>
+<th>Cur reads</th>
+<th>Level_code</th>
+<th>ID</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Percentage of reads covered by the clade rooted at this taxon</td>
+<td>Number of reads covered by the clade rooted at this taxon</td>
+<td>Number of reads assigned directly to this taxon</td>
+<td>A rank code, indicating (U)nclassified, (D)omain, (K)ingdom, (P)hylum, (C)lass, (O)rder, (F)amily, (G)enus, or (S)pecies. All other ranks are simply ‘-’</td>
+<td>NCBI taxonomy ID</td>
+<td>Indented scientific name</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> 42.45  149820  149820  U   0   unclassified
+ 57.55  203141  99  R   1   root
+ 57.33  202369  695 R1  131567    cellular organisms
+ 57.00  201183  6910    D   2       Bacteria
+ 34.33  121165  1729    D1  1783272       Terrabacteria group
+ 28.74  101447  1954    P   1239            Bacillota
+ 23.78  83922   98  C   186801            Clostridia
+ 23.72  83720   4334    O   186802              Eubacteriales
+ 10.41  36758   2902    F   186803                Lachnospiraceae
+  2.36  8343    124 G   2719313                 Enterocloster</code></pre>
+</div>
+</div>
+<ol start="3" type="1">
+<li>Формат mpa-отчета:</li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>full taxonomy of each taxon</th>
+<th>All reads</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Each rank’s name separated by a pipe character</td>
+<td>Number of reads covered by the clade rooted at this taxon</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>x__cellular_organisms   202369
+x__cellular_organisms|d__Bacteria   201183
+x__cellular_organisms|d__Bacteria|x__Terrabacteria_group    121165
+x__cellular_organisms|d__Bacteria|x__Terrabacteria_group|p__Bacillota   101447
+x__cellular_organisms|d__Bacteria|x__Terrabacteria_group|p__Bacillota|c__Clostridia 83922
+x__cellular_organisms|d__Bacteria|x__Terrabacteria_group|p__Bacillota|c__Clostridia|o__Eubacteriales    83720
+x__cellular_organisms|d__Bacteria|x__Terrabacteria_group|p__Bacillota|c__Clostridia|o__Eubacteriales|f__Lachnospiraceae 36758
+x__cellular_organisms|d__Bacteria|x__Terrabacteria_group|p__Bacillota|c__Clostridia|o__Eubacteriales|f__Lachnospiraceae|g__Enterocloster    8343</code></pre>
+</div>
+</div>
+<p>Теперь объединим оба вида репортов построчно - убрав первые две строчки из обычного репорта, а затем - объединим с обычным output через ID таксона</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>KRAKEN_OUTPUT_DIR<span class="op">=</span><span class="st">"Kraken-results/Kraken_outputs"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>KRAKEN_REPORT_DIR<span class="op">=</span><span class="st">"Kraken-results/Kraken_reports"</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>KRAKEN_MPA_REPORT_DIR<span class="op">=</span><span class="st">"Kraken-results/Kraken_mpa_reports"</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>KRAKEN_TABLES_DIR<span class="op">=</span><span class="st">"Kraken-results/Kraken_tables"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> filename <span class="kw">in</span> tqdm(os.listdir(KRAKEN_OUTPUT_DIR), desc<span class="op">=</span><span class="st">'Progress Bar'</span>):</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    kraken_output_path <span class="op">=</span> os.path.join(KRAKEN_OUTPUT_DIR, filename)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    kraken_report_path <span class="op">=</span> os.path.join(KRAKEN_REPORT_DIR, filename.replace(<span class="st">'output'</span>,<span class="st">'report'</span>))</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    kraken_mpa_report_path <span class="op">=</span> os.path.join(KRAKEN_MPA_REPORT_DIR, filename.replace(<span class="st">'output'</span>,<span class="st">'mpa_report'</span>))</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    kraken_table_path <span class="op">=</span> os.path.join(KRAKEN_TABLES_DIR, filename.replace(<span class="st">'output'</span>,<span class="st">'table'</span>))</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    kraken_output <span class="op">=</span> pd.read_csv(kraken_output_path, sep <span class="op">=</span> <span class="st">'</span><span class="ch">\t</span><span class="st">'</span>,names <span class="op">=</span> [<span class="st">'"C"/"U"'</span>,<span class="st">'Contig'</span>,<span class="st">'ID'</span>,<span class="st">'Length'</span>,<span class="st">'List'</span>])[[<span class="st">'Contig'</span>,<span class="st">'ID'</span>]]</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    kraken_report <span class="op">=</span> pd.read_csv(kraken_report_path, sep <span class="op">=</span> <span class="st">'</span><span class="ch">\t</span><span class="st">'</span>, </span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    names <span class="op">=</span> [<span class="st">'Abundance'</span>,<span class="st">'All reads'</span>,<span class="st">'Cur reads'</span>,<span class="st">'Level_code'</span>,<span class="st">'ID'</span>,<span class="st">'Name'</span>])[[<span class="st">'ID'</span>]].loc[<span class="dv">2</span>:,:].reset_index(drop <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> []</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(kraken_mpa_report_path, <span class="st">'r'</span>) <span class="im">as</span> f:</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> line <span class="kw">in</span> f:</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>            taxonomy_string, count <span class="op">=</span> line.split(<span class="st">'</span><span class="ch">\t</span><span class="st">'</span>)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>            taxonomy_ranks <span class="op">=</span> taxonomy_string.split(<span class="st">'|'</span>)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>            row <span class="op">=</span> {}  <span class="co"># Initialize the row dictionary</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> rank <span class="kw">in</span> taxonomy_ranks:</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>                rank_type, rank_name <span class="op">=</span> rank.split(<span class="st">'__'</span>, <span class="dv">1</span>)  <span class="co"># Split at the first occurrence</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> rank_type <span class="kw">in</span> [<span class="st">'d'</span>,<span class="st">'p'</span>,<span class="st">'s'</span>,<span class="st">'s1'</span>]:</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>                  row[rank_type] <span class="op">=</span> rank_name</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>            data.append(row)</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    taxonomy_df <span class="op">=</span> pd.DataFrame(data)</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(taxonomy_df) <span class="op">!=</span> <span class="bu">len</span>(kraken_report):</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="bu">len</span>(taxonomy_df),<span class="bu">len</span>(kraken_report))</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The number of rows in taxonomy file does not match the number of rows in metadata file, merging cannot be performed. "</span>)</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. Merge the DataFrames based on index</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    Tax_ID_df <span class="op">=</span> pd.concat([kraken_report, taxonomy_df], axis<span class="op">=</span><span class="dv">1</span>) <span class="co"># Concatenate horizontally along the columns</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    merged <span class="op">=</span> pd.merge(Tax_ID_df,kraken_output, on <span class="op">=</span> <span class="st">'ID'</span>,how <span class="op">=</span> <span class="st">'right'</span>)</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    merged <span class="op">=</span> merged.dropna(axis<span class="op">=</span><span class="dv">1</span>, how<span class="op">=</span><span class="st">'all'</span>)</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>    merged.to_csv(kraken_table_path,index <span class="op">=</span> <span class="va">False</span>)    </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Формат полученной таблицы:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>ID,d,p,s,Contig
+2585117,Bacteria,Bacteroidota,Alistipes_onderdonkii,NODE_1_length_816938_cov_20.158043
+2093856,Bacteria,Bacteroidota,Butyricimonas_faecalis,NODE_2_length_519385_cov_14.276320
+2585117,Bacteria,Bacteroidota,Alistipes_onderdonkii,NODE_3_length_510562_cov_18.147881
+2585117,Bacteria,Bacteroidota,Alistipes_onderdonkii,NODE_4_length_449769_cov_19.634943
+88431,Bacteria,Bacillota,Dorea_longicatena,NODE_5_length_429495_cov_23.065349
+2585117,Bacteria,Bacteroidota,Alistipes_onderdonkii,NODE_6_length_373149_cov_19.142160
+216816,Bacteria,Actinomycetota,Bifidobacterium_longum,NODE_7_length_352118_cov_24.071475
+820,Bacteria,Bacteroidota,Bacteroides_uniformis,NODE_8_length_291686_cov_18.952762
+820,Bacteria,Bacteroidota,Bacteroides_uniformis,NODE_9_length_291186_cov_18.765693</code></pre>
+</div>
+</div>
+</section>
+<section id="подсчет-встречаемости-орс-нуклеотидные-последовательности" class="level3" data-number="2.1.6">
+<h3 data-number="2.1.6" class="anchored" data-anchor-id="подсчет-встречаемости-орс-нуклеотидные-последовательности"><span class="header-section-number">2.1.6</span> Подсчет встречаемости ОРС (нуклеотидные последовательности)</h3>
+<p>Код запуска:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#source /Users/lidaflorenskaya/miniconda3/bin/activate py3_study</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#conda install bioconda::bwa</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="va">aligned_reads_directory</span><span class="op">=</span><span class="st">"Readcounts/aligned_reads"</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> Obtained-data/ORFs/NT/<span class="pp">*</span>_orf_nt_names.fasta<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">filename</span><span class="op">=</span><span class="st">"</span><span class="va">${file</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span><span class="st">"</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">[[</span> <span class="st">"</span><span class="va">$filename</span><span class="st">"</span> <span class="ot">=~</span> <span class="op">([</span><span class="ss">A</span><span class="op">-</span><span class="ss">Za</span><span class="op">-</span><span class="ss">z</span><span class="op">]</span><span class="pp">+</span><span class="op">)</span><span class="ss">_</span><span class="op">([</span><span class="ss">0</span><span class="op">-</span><span class="ss">9</span><span class="op">]</span><span class="pp">+</span><span class="op">)</span><span class="ss">_orf_nt_names</span><span class="dt">\.</span><span class="ss">fasta</span> <span class="kw">]]</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">prefix</span><span class="op">=</span><span class="st">"</span><span class="va">${BASH_REMATCH</span><span class="op">[</span><span class="dv">1</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="va">number</span><span class="op">=</span><span class="st">"</span><span class="va">${BASH_REMATCH</span><span class="op">[</span><span class="dv">2</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Индексируем нуклеотидные последовательности ОРС</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">bwa</span> index <span class="st">"</span><span class="va">$file</span><span class="st">"</span> </span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Картируем риды на ОРС</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">bwa</span> mem <span class="st">"</span><span class="va">$file</span><span class="st">"</span> <span class="dt">\ </span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Obtained-data/Trimmed-reads/</span><span class="va">${prefix}</span><span class="ex">_</span><span class="va">${number}</span><span class="ex">_R1.fq.gz</span> <span class="dt">\</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    Obtained-data/Trimmed-reads/<span class="va">${prefix}</span>_<span class="va">${number}</span>_R2.fq.gz <span class="dt">\</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">&gt;</span> <span class="st">"</span><span class="va">$aligned_reads_directory</span><span class="st">/aligned_read_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.sam"</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">cd</span> Readcounts/aligned_reads <span class="co"># чтобы все доп. технические файлы создавались в этой директории</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Переводим SAM в BAM</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> view <span class="at">-@</span> 10 <span class="at">-b</span> <span class="st">"aligned_read_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.sam"</span> <span class="at">-F</span> 0x4 <span class="kw">|</span> <span class="ex">samtools</span> sort <span class="at">-@</span> 10 <span class="at">-</span> <span class="op">&gt;</span> <span class="st">"aligned_read_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.bam"</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Индексируем BAM</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> index <span class="st">"aligned_read_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.bam"</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">cd</span> <span class="at">-</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Подсчитываем ридкаунты и записываем результат в файл</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> idxstats <span class="st">"</span><span class="va">$aligned_reads_directory</span><span class="st">/aligned_read_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.bam"</span> <span class="dt">\</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>    <span class="op">&gt;</span> Readcounts/Readcount-result/Readcount_result_<span class="va">${prefix}</span>_<span class="va">${number}</span>.txt</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Удалим большой SAM, который нам не нужен</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rm</span> <span class="at">-r</span> <span class="st">"</span><span class="va">$aligned_reads_directory</span><span class="st">/aligned_read_</span><span class="va">${prefix}</span><span class="st">_</span><span class="va">${number}</span><span class="st">.sam"</span></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>В результате вышел тектовый файл следующего формата:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>orf</th>
+<th>sequence length</th>
+<th>readcounts</th>
+<th>unmapped read-segments</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>reference sequence name</td>
+<td>sequence length</td>
+<td>mapped read-segments</td>
+<td>unmapped read-segments</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>NODE_1_length_816938_cov_20.158043$gene_id=1    1173    809 0
+NODE_1_length_816938_cov_20.158043$gene_id=2    906 632 0
+NODE_1_length_816938_cov_20.158043$gene_id=3    546 351 0
+...
+NODE_352949_length_78_cov_4.000000$gene_id=549637   78  0   0
+NODE_352951_length_78_cov_4.000000$gene_id=549638   78  0   0
+NODE_352958_length_78_cov_3.000000$gene_id=549639   78  291 0
+*   0   0   0</code></pre>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-kovtun2022" class="csl-entry" role="listitem">
+Kovtun, Alexey S., Olga V. Averina, Irina Y. Angelova, Roman A. Yunes, Yana A. Zorkina, Anna Y. Morozova, Alexey V. Pavlichenko, et al. 2022. <span>“Alterations of the Composition and Neurometabolic Profile of Human Gut Microbiota in Major Depressive Disorder.”</span> <em>Biomedicines</em> 10 (9): 2162. <a href="https://doi.org/10.3390/biomedicines10092162">https://doi.org/10.3390/biomedicines10092162</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Дизайн исследования">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Дизайн исследования</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./results.html" class="pagination-link" aria-label="Создадим матрицу сигнатурных пар **патоген-ген**">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Создадим матрицу сигнатурных пар <strong>патоген-ген</strong></span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
