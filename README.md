@@ -1,20 +1,37 @@
+# Метагеномный анализ кишечной микробиоты при депрессии
 
-## Docker контейнер
+## О проекте
 
-Для запуска сайта с результатами анализа:
+Результаты метагеномного анализа кишечной микробиоты пациентов с большим депрессивным расстройством (PD) и здоровых добровольцев (HC).
+
+**Основные этапы анализа:**
+- Поиск генов патогенности (BLAST против базы VFDB)
+- Таксономическая классификация (Kraken2)
+- Подсчёт встречаемости ORF (BWA + samtools)
+- Статистический анализ (точный тест Фишера, FDR коррекция)
+- Интерактивные Sankey-диаграммы
+
+---
+
+## Запуск с помощью Docker
+
+### Требования
+
+- Установленный Docker ([инструкция](https://docs.docker.com/get-docker/))
+
+### Команды для запуска
 
 ```{bash}
-# Перейдите в папку docker-build
-cd docker-build
+# 1. Клонируйте репозиторий
+git clone https://github.com/florenskaial118/Metagenomics.git
+cd Metagenomics/docker-build
 
-# Соберите образ
-docker build -t metagenomics-site .
+# 2. Соберите Docker образ
+docker build -t metagenomics-report .
 
-# Запустите контейнер
-docker run -d -p 8080:80 --name metagenomics-app metagenomics-site
+# 3. Запустите контейнер
+docker run -d -p 8080:80 --name metagenomics-app metagenomics-report
 
-# Откройте в браузере: http://localhost:8080
-
-# Остановка
-docker stop metagenomics-app && docker rm metagenomics-app
+# 4. Откройте в браузере
+# http://localhost:8080
 ```
